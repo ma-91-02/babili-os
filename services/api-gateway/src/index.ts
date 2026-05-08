@@ -5,8 +5,6 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-app.use(express.json());
-
 const INTERNAL_SERVICE_TOKEN = process.env.INTERNAL_SERVICE_TOKEN || 'dev-internal-token';
 
 interface ServiceRoute {
@@ -216,12 +214,18 @@ const translationProxy = createProxyMiddleware({
   },
 });
 
-// ─── Routes ──────────────────────────────────────────────────────────────────
+// ─── Proxy routes (no body parser — let target services handle bodies) ──────
 
 app.use('/api/v1/auth', authProxy);
 app.use('/api/v1/restaurants', authMiddleware, restaurantProxy);
 app.use('/api/v1/orders', authMiddleware, orderProxy);
 app.use('/api/v1/translations', translationProxy);
+
+// ─── Gateway-specific routes ────────────────────────────────────────────────
+
+app.use(express.json());
+
+// (Gateway-specific routes defined above will use this body parser)
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {

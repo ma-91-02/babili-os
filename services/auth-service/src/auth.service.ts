@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs';
 import * as userRepo from './repositories/user.repository';
 import * as sessionRepo from './repositories/session.repository';
 import * as tokenRepo from './repositories/token.repository';
@@ -53,7 +54,6 @@ export async function login(email: string, password: string): Promise<AuthResult
     return { success: false, error: 'Invalid email or password', status: 401 };
   }
 
-  const bcrypt = await import('bcryptjs');
   const valid = await bcrypt.compare(password, user.passwordHash);
   if (!valid) {
     return { success: false, error: 'Invalid email or password', status: 401 };
