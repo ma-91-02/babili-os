@@ -9,8 +9,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@babili/shared": "*",
     "express": "^4.21.0",
-    "@babili/shared": "*"
+    "http-proxy-middleware": "^3.0.5"
   },
   "devDependencies": {
     "tsx": "^4.7.0",

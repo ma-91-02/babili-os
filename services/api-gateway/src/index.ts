@@ -1,9 +1,13 @@
 import express from 'express';
+import type { Request, Response, NextFunction } from 'express';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
 app.use(express.json());
+
+const INTERNAL_SERVICE_TOKEN = process.env.INTERNAL_SERVICE_TOKEN || 'dev-internal-token';
 
 interface ServiceRoute {
   name: string;
@@ -17,6 +21,10 @@ const services: ServiceRoute[] = [
   { name: 'order-service', url: 'http://localhost:4003', healthEndpoint: '/health' },
   { name: 'translation-service', url: 'http://localhost:4004', healthEndpoint: '/health' },
 ];
+
+const serviceMap = new Map(services.map((s) => [s.name, s]));
+
+// ─── Gateway-specific routes (no auth) ───────────────────────────────────────
 
 app.get('/health', (_req, res) => {
   res.json({
@@ -85,26 +93,118 @@ app.get('/api/v1/gateway/routes', (_req, res) => {
           description: 'Aggregated health check',
         },
         { path: '/api/v1/gateway/routes', methods: ['GET'], description: 'List all routes' },
-        { path: '/api/v1/auth/*', methods: ['GET', 'POST'], description: 'Auth service endpoints' },
+        {
+          path: '/api/v1/auth/*',
+          methods: ['GET', 'POST'],
+          description: 'Auth service endpoints (public)',
+        },
         {
           path: '/api/v1/restaurants/*',
           methods: ['GET', 'POST', 'PUT', 'DELETE'],
-          description: 'Restaurant service endpoints',
+          description: 'Restaurant service endpoints (auth required)',
         },
         {
           path: '/api/v1/orders/*',
           methods: ['GET', 'POST', 'PUT'],
-          description: 'Order service endpoints',
+          description: 'Order service endpoints (auth required)',
         },
         {
           path: '/api/v1/translations/*',
           methods: ['GET'],
-          description: 'Translation service endpoints',
+          description: 'Translation service endpoints (public)',
         },
       ],
     },
   });
 });
+
+// ─── Auth middleware ─────────────────────────────────────────────────────────
+
+async function authMiddleware(req: Request, res: Response, next: NextFunction): Promise<void> {
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith('Bearer ')) {
+    res.status(401).json({ success: false, error: 'Missing or invalid Authorization header' });
+    return;
+  }
+
+  const token = authHeader.slice(7);
+  const authServiceUrl = serviceMap.get('auth-service')?.url ?? 'http://localhost:4001';
+
+  try {
+    const response = await fetch(`${authServiceUrl}/api/v1/auth/verify`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!response.ok) {
+      res.status(401).json({ success: false, error: 'Invalid or expired token' });
+      return;
+    }
+
+    const body = await response.json();
+    const user = body.data;
+
+    (req as any).authHeaders = {
+      'X-Auth-User-Id': user.userId,
+      'X-Auth-Email': user.email,
+      'X-Auth-Role': user.role,
+      'X-Auth-Restaurant-Id': user.restaurantId || '',
+      'X-Internal-Service-Token': INTERNAL_SERVICE_TOKEN,
+    };
+
+    next();
+  } catch {
+    res.status(503).json({ success: false, error: 'Auth service unavailable' });
+  }
+}
+
+// ─── Proxy instances ─────────────────────────────────────────────────────────
+
+const authProxy = createProxyMiddleware({
+  target: 'http://localhost:4001',
+  changeOrigin: true,
+});
+
+const restaurantProxy = createProxyMiddleware({
+  target: 'http://localhost:4002',
+  changeOrigin: true,
+  on: {
+    proxyReq: (proxyReq, req) => {
+      const authHeaders = (req as any).authHeaders as Record<string, string> | undefined;
+      if (authHeaders) {
+        Object.entries(authHeaders).forEach(([key, value]) => {
+          proxyReq.setHeader(key, value);
+        });
+      }
+    },
+  },
+});
+
+const orderProxy = createProxyMiddleware({
+  target: 'http://localhost:4003',
+  changeOrigin: true,
+  on: {
+    proxyReq: (proxyReq, req) => {
+      const authHeaders = (req as any).authHeaders as Record<string, string> | undefined;
+      if (authHeaders) {
+        Object.entries(authHeaders).forEach(([key, value]) => {
+          proxyReq.setHeader(key, value);
+        });
+      }
+    },
+  },
+});
+
+const translationProxy = createProxyMiddleware({
+  target: 'http://localhost:4004',
+  changeOrigin: true,
+});
+
+// ─── Routes ──────────────────────────────────────────────────────────────────
+
+app.use('/api/v1/auth', authProxy);
+app.use('/api/v1/restaurants', authMiddleware, restaurantProxy);
+app.use('/api/v1/orders', authMiddleware, orderProxy);
+app.use('/api/v1/translations', translationProxy);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {

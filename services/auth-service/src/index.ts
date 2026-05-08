@@ -61,6 +61,30 @@ app.post('/api/v1/auth/logout', async (req, res) => {
   res.json({ success: true, data: { message: 'Logged out successfully' } });
 });
 
+app.get('/api/v1/auth/verify', async (req, res) => {
+  const token = req.headers.authorization?.replace('Bearer ', '');
+  if (!token) {
+    res.status(401).json({ success: false, error: 'No token provided' });
+    return;
+  }
+
+  const session = await authService.getSession(token);
+  if (!session) {
+    res.status(401).json({ success: false, error: 'Invalid or expired session' });
+    return;
+  }
+
+  res.json({
+    success: true,
+    data: {
+      userId: session.userId,
+      email: session.email,
+      role: session.role,
+      restaurantId: session.restaurantId,
+    },
+  });
+});
+
 app.get('/api/v1/auth/me', async (req, res) => {
   const token = req.headers.authorization?.replace('Bearer ', '');
   if (!token) {

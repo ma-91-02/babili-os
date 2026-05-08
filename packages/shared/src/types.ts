@@ -147,3 +147,16 @@ export interface HealthCheck {
   timestamp: string;
   uptime: number;
 }
+
+export interface AuthenticatedUser {
+  userId: string;
+  email: string;
+  role: Role;
+  restaurantId: string | null;
+}
+
+export interface AuthContext {
+  authenticated: boolean;
+  user: AuthenticatedUser | null;
+  error: string | null;
+}

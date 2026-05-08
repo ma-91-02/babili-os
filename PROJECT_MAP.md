@@ -186,8 +186,7 @@ npm run db:studio
 
 ## [CURRENT MILESTONE]
 
-**Phase 10 — Database Integration + Redis Foundation** ✅ Complete
-**Next: Phase 11 — Auth Middleware / Service-to-Service Auth**
+**Phase 11 — Auth Middleware + Route Protection + Service-to-Service Security Foundation** ✅ Complete
 
 ## [COMPLETED]
 
@@ -303,6 +302,37 @@ npm run db:studio
 - [x] Vitest 4 + Vite 8 confirmed working on Node 23
 - [x] Order test fixed: menuItem Prisma relation connect, beforeAll variable hoisting fix
 - [x] Package.json scripts: db:generate, db:migrate:dev, db:migrate:deploy, db:studio
+- [x] Removed 3 orphaned in-memory store.ts files (auth-service, restaurant-service, order-service)
+- [x] Created dev-only idempotent database seed (packages/database/src/seed.ts)
+- [x] Seed produces 6 users, 1 restaurant, 4 staff, 5 tables, 4 menu sections, 14 items, 20 ingredients
+- [x] Seed scripts added: db:seed, db:reset:dev
+- [x] bcryptjs added to packages/database for seed password hashing
+
+### Phase 11 — Auth Middleware + Route Protection + Service-to-Service Security Foundation
+
+- [x] AuthContext and AuthenticatedUser types in packages/shared
+- [x] Auth helpers (buildAuthContext, extractAuthContextFromHeaders, validateInternalToken)
+- [x] Token verify endpoint added to auth-service (GET /api/v1/auth/verify)
+- [x] API Gateway now proxies requests to all microservices via http-proxy-middleware
+- [x] Auth middleware in API Gateway validates Bearer token via auth-service
+- [x] Auth context passed to downstream services via X-Auth-\* internal headers
+- [x] X-Internal-Service-Token header mechanism for service-to-service auth
+- [x] Route protection in restaurant-service (role-based + tenant isolation)
+- [x] Route protection in order-service (role-based + tenant isolation)
+- [x] Public endpoints: health, auth routes, translation routes, slug lookup, order creation
+- [x] Protected endpoints require role checks (owner, manager, waiter, kitchen, cashier)
+- [x] Tenant isolation middleware prevents cross-restaurant access
+- [x] Standardized error responses (401, 403, 404, 503)
+- [x] INTERNAL_SERVICE_TOKEN env var documented in .env.example
+- [x] Auth helpers unit tests (packages/shared: 17 tests)
+- [x] API Gateway auth middleware tests (6 tests)
+- [x] Restaurant service auth middleware tests (10 tests)
+- [x] Order service auth middleware tests (15 tests)
+- [x] docs/architecture.md — Auth flow, route protection, internal headers
+- [x] docs/permissions.md — Full role/permission matrix, endpoint protection table
+- [x] docs/api.md — Complete API reference with auth requirements
+- [x] docs/deployment.md — Env vars, internal token setup, security checklist
+- [x] All 154 tests pass (105 existing + 49 new)
 
 ## [ORPHANS & PENDING]
 
@@ -322,10 +352,8 @@ npm run db:studio
 - [ ] Domain routing configuration — needs DNS
 - [ ] Coolify deployment configuration — needs server
 - [ ] RTL comprehensive testing — structure exists, needs verification
-- [ ] Auth middleware in API Gateway — service-to-service auth
 - [ ] Redis usage in business logic — foundation only, not yet consuming
 - [ ] Redis session store — sessions currently in PostgreSQL
-- [ ] In-memory store.ts files — 3 orphaned files (auth, restaurant, order) — not imported, preserved as reference
 
 ## [RISKS]
 
@@ -339,11 +367,16 @@ npm run db:studio
 
 ## [NEXT STEPS]
 
-**Phase 11 — Auth Middleware / Service-to-Service Auth** (next)
+**Phase 12 — Web Platform Authentication** (next)
 
-- Add auth middleware to API Gateway
-- Validate tokens before proxying to services
-- Service-level authorization headers
+- Add login/register/session to web platforms
+- Protect admin, restaurant, staff routes with auth
+- Customer QR ordering remains public
+
+**Phase 13 — Real-time Communication** (future)
+
+- WebSocket or SSE for kitchen queue, order updates
+- Real-time push notifications
 
 **Post-MVP:**
 

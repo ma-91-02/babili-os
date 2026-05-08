@@ -111,6 +111,8 @@ babili/
 npm run db:generate        # Generate Prisma client
 npm run db:migrate:dev     # Apply migrations (dev)
 npm run db:migrate:deploy  # Apply migrations (prod)
+npm run db:seed            # Seed dev database (idempotent)
+npm run db:reset:dev       # Reset + re-migrate + re-seed
 npm run db:studio          # Open Prisma Studio
 ```
 

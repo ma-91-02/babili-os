@@ -22,6 +22,8 @@
     "db:migrate:dev": "npm run migrate:dev --workspace=@babili/database",
     "db:migrate:deploy": "npm run migrate:deploy --workspace=@babili/database",
     "db:studio": "npm run studio --workspace=@babili/database",
+    "db:seed": "npm run seed --workspace=@babili/database",
+    "db:reset:dev": "npm run migrate:reset --workspace=@babili/database && npm run seed --workspace=@babili/database",
     "docker:dev": "docker compose -f docker-compose.dev.yml up",
     "docker:prod": "docker compose up"
   },

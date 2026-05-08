@@ -4,6 +4,7 @@ import path from 'path';
 process.env.DATABASE_URL =
   process.env.DATABASE_URL ||
   'postgresql://babili:babili_dev_pass@localhost:5432/babili?schema=public';
+process.env.INTERNAL_SERVICE_TOKEN = process.env.INTERNAL_SERVICE_TOKEN || 'dev-internal-token';
 
 export default defineConfig({
   resolve: {
