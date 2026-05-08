@@ -1,0 +1,79 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/apps/web/.next
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
+
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+      dockerfile: ../../Dockerfile.dev.service
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./services/api-gateway:/app
+      - /app/node_modules
+    environment:
+      - PORT=4000
+    command: npx tsx watch src/index.ts
+
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: ../../Dockerfile.dev.service
+    ports:
+      - "4001:4001"
+    volumes:
+      - ./services/auth-service:/app
+      - /app/node_modules
+    environment:
+      - PORT=4001
+    command: npx tsx watch src/index.ts
+
+  restaurant-service:
+    build:
+      context: ./services/restaurant-service
+      dockerfile: ../../Dockerfile.dev.service
+    ports:
+      - "4002:4002"
+    volumes:
+      - ./services/restaurant-service:/app
+      - /app/node_modules
+    environment:
+      - PORT=4002
+    command: npx tsx watch src/index.ts
+
+  order-service:
+    build:
+      context: ./services/order-service
+      dockerfile: ../../Dockerfile.dev.service
+    ports:
+      - "4003:4003"
+    volumes:
+      - ./services/order-service:/app
+      - /app/node_modules
+    environment:
+      - PORT=4003
+    command: npx tsx watch src/index.ts
+
+  translation-service:
+    build:
+      context: ./services/translation-service
+      dockerfile: ../../Dockerfile.dev.service
+    ports:
+      - "4004:4004"
+    volumes:
+      - ./services/translation-service:/app
+      - /app/node_modules
+    environment:
+      - PORT=4004
+    command: npx tsx watch src/index.ts

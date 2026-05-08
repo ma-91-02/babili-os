@@ -1,0 +1,62 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - api-gateway
+    restart: unless-stopped
+
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+      dockerfile: ../../Dockerfile.service
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+    restart: unless-stopped
+
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: ../../Dockerfile.service
+    ports:
+      - "4001:4001"
+    environment:
+      - PORT=4001
+    restart: unless-stopped
+
+  restaurant-service:
+    build:
+      context: ./services/restaurant-service
+      dockerfile: ../../Dockerfile.service
+    ports:
+      - "4002:4002"
+    environment:
+      - PORT=4002
+    restart: unless-stopped
+
+  order-service:
+    build:
+      context: ./services/order-service
+      dockerfile: ../../Dockerfile.service
+    ports:
+      - "4003:4003"
+    environment:
+      - PORT=4003
+    restart: unless-stopped
+
+  translation-service:
+    build:
+      context: ./services/translation-service
+      dockerfile: ../../Dockerfile.service
+    ports:
+      - "4004:4004"
+    environment:
+      - PORT=4004
+    restart: unless-stopped

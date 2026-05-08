@@ -1,0 +1,81 @@
+@use '../../../styles/tokens' as *;
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  max-width: 480px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+}
+
+.logo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: $color-main;
+}
+
+.langSwitch select {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid $color-secondary;
+  border-radius: $border-radius-md;
+  font-size: 0.875rem;
+  background-color: $color-white;
+  color: $color-text;
+  cursor: pointer;
+  outline: none;
+
+  &:focus {
+    border-color: $color-main;
+  }
+}
+
+.content {
+  flex: 1;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.restaurantInfo {
+  text-align: center;
+
+  h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    text-transform: capitalize;
+  }
+}
+
+.tagline {
+  color: $color-text-secondary;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.menuPreview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+}
+
+.footer {
+  text-align: center;
+  padding: 1.5rem;
+  color: $color-text-secondary;
+  font-size: 0.75rem;
+  border-top: 1px solid $color-secondary;
+}

@@ -1,0 +1,46 @@
+// Design Tokens — Babili Design System
+// Do not use colors outside this system
+
+$color-main: #614ae1;
+$color-bg: #f0eeff;
+$color-secondary: #e1dcff;
+
+$color-white: #ffffff;
+$color-black: #0a0a1a;
+$color-text: #1a1a2e;
+$color-text-secondary: #6b6b80;
+
+$color-success: #22c55e;
+$color-warning: #f59e0b;
+$color-error: #ef4444;
+$color-info: #3b82f6;
+
+$font-family:
+  'Inter',
+  -apple-system,
+  BlinkMacSystemFont,
+  'Segoe UI',
+  Roboto,
+  sans-serif;
+$font-family-arabic: 'Noto Kufi Arabic', 'Tajawal', sans-serif;
+
+$border-radius-sm: 6px;
+$border-radius-md: 12px;
+$border-radius-lg: 20px;
+
+$shadow-sm: 0 1px 3px rgba(97, 74, 225, 0.08);
+$shadow-md: 0 4px 12px rgba(97, 74, 225, 0.12);
+$shadow-lg: 0 8px 30px rgba(97, 74, 225, 0.16);
+
+$transition-fast: 150ms ease;
+$transition-normal: 250ms ease;
+
+$breakpoint-sm: 640px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1280px;
+$breakpoint-2xl: 1536px;
+
+$max-width: 1440px;
+$sidebar-width: 280px;
+$header-height: 64px;

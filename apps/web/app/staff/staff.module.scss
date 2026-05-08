@@ -1,0 +1,94 @@
+@use '../../styles/tokens' as *;
+
+.staff {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: $sidebar-width;
+  background-color: $color-white;
+  border-right: 1px solid $color-secondary;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 10;
+}
+
+.logo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: $color-main;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.navItem {
+  padding: 0.625rem 0.75rem;
+  border-radius: $border-radius-md;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $color-text-secondary;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    background-color: $color-bg;
+    color: $color-main;
+  }
+
+  &:first-child {
+    background-color: $color-secondary;
+    color: $color-main;
+    font-weight: 600;
+  }
+}
+
+.main {
+  flex: 1;
+  margin-left: $sidebar-width;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid $color-secondary;
+  background-color: $color-white;
+
+  h1 {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+}
+
+.content {
+  padding: 2rem;
+}
+
+@media (max-width: $breakpoint-lg) {
+  .sidebar {
+    width: 64px;
+    overflow: hidden;
+
+    .logo,
+    .navItem {
+      white-space: nowrap;
+      overflow: hidden;
+    }
+  }
+
+  .main {
+    margin-left: 64px;
+  }
+}

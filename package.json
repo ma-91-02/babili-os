@@ -1,0 +1,38 @@
+{
+  "name": "babili",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Babili — Smart multilingual restaurant operations from table to kitchen",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "services/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=apps/web",
+    "build": "npm run build --workspace=apps/web",
+    "lint": "npm run lint --workspace=apps/web",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "format": "prettier --write \"**/*.{ts,tsx,json,scss,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,json,scss,md}\"",
+    "clean": "rm -rf apps/*/.next apps/*/node_modules node_modules packages/*/node_modules services/*/node_modules",
+    "docker:dev": "docker compose -f docker-compose.dev.yml up",
+    "docker:prod": "docker compose up"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/supertest": "^7.2.0",
+    "@types/uuid": "^9.0.7",
+    "prettier": "^3.2.0",
+    "supertest": "^7.2.2",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
