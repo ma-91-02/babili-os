@@ -18,6 +18,10 @@
     "format": "prettier --write \"**/*.{ts,tsx,json,scss,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,json,scss,md}\"",
     "clean": "rm -rf apps/*/.next apps/*/node_modules node_modules packages/*/node_modules services/*/node_modules",
+    "db:generate": "npm run generate --workspace=@babili/database",
+    "db:migrate:dev": "npm run migrate:dev --workspace=@babili/database",
+    "db:migrate:deploy": "npm run migrate:deploy --workspace=@babili/database",
+    "db:studio": "npm run studio --workspace=@babili/database",
     "docker:dev": "docker compose -f docker-compose.dev.yml up",
     "docker:prod": "docker compose up"
   },
@@ -30,9 +34,12 @@
     "prettier": "^3.2.0",
     "supertest": "^7.2.2",
     "typescript": "^5.3.3",
-    "vitest": "^1.2.0"
+    "vitest": "^4.1.5"
   },
   "engines": {
     "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "vite": "^8.0.11"
   }
 }

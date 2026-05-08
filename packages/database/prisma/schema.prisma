@@ -1,0 +1,254 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PlatformRole {
+  platform_owner
+  platform_admin
+  support_agent
+  finance_admin
+  translation_manager
+}
+
+enum RestaurantRole {
+  restaurant_owner
+  manager
+  cashier
+  kitchen
+  waiter
+  viewer
+}
+
+enum OrderStatus {
+  pending
+  confirmed
+  preparing
+  ready
+  delivered
+  cancelled
+}
+
+enum CashierStatus {
+  unpaid
+  paid
+  refunded
+}
+
+enum KitchenStatus {
+  received
+  preparing
+  ready
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  passwordHash  String
+  name          String
+  role          String   @default("customer")
+  restaurantId  String?
+  language      String   @default("en")
+  emailVerified Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  sessions              Session[]
+  emailVerificationTokens EmailVerificationToken[]
+  passwordResetTokens   PasswordResetToken[]
+  restaurantStaff       RestaurantStaff[]
+  ordersAsCustomer      Order[]       @relation("CustomerOrders")
+  ordersAsWaiter        Order[]       @relation("WaiterOrders")
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  email     String
+  role      String
+  restaurantId String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("email_verification_tokens")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
+}
+
+model Restaurant {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  ownerId   String
+  language  String   @default("en")
+  currencies String[] @default(["USD"])
+  country   String   @default("US")
+  timezone  String   @default("UTC")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  menuSections MenuSection[]
+  menuItems    MenuItem[]
+  tables       RestaurantTable[]
+  staff        RestaurantStaff[]
+  orders       Order[]
+
+  @@map("restaurants")
+}
+
+model RestaurantStaff {
+  id           String         @id @default(uuid())
+  restaurantId String
+  userId       String
+  role         RestaurantRole
+  createdAt    DateTime       @default(now())
+  restaurant   Restaurant     @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([restaurantId, userId])
+  @@map("restaurant_staff")
+}
+
+model RestaurantTable {
+  id           String   @id @default(uuid())
+  restaurantId String
+  tableNumber  Int
+  capacity     Int      @default(4)
+  qrCode       String   @unique
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@map("restaurant_tables")
+}
+
+model MenuSection {
+  id           String   @id @default(uuid())
+  restaurantId String
+  name         String
+  sortOrder    Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  items        MenuItem[]
+
+  @@map("menu_sections")
+}
+
+model MenuItem {
+  id           String   @id @default(uuid())
+  restaurantId String
+  sectionId    String
+  name         String
+  description  String   @default("")
+  price        Float
+  currency     String   @default("USD")
+  image        String?
+  isAvailable  Boolean  @default(true)
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  section      MenuSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  ingredients  MenuItemIngredient[]
+  orderItems   OrderItem[]
+
+  @@map("menu_items")
+}
+
+model Ingredient {
+  id        String   @id @default(uuid())
+  name      String
+  restaurantId String
+  createdAt DateTime @default(now())
+  menuItems MenuItemIngredient[]
+
+  @@unique([restaurantId, name])
+  @@map("ingredients")
+}
+
+model MenuItemIngredient {
+  menuItemId   String
+  ingredientId String
+  menuItem     MenuItem   @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+
+  @@id([menuItemId, ingredientId])
+  @@map("menu_item_ingredients")
+}
+
+model Order {
+  id            String       @id @default(uuid())
+  restaurantId  String
+  tableId       String
+  customerId    String?
+  waiterId      String?
+  total         Float
+  currency      String       @default("USD")
+  orderStatus   OrderStatus  @default(pending)
+  kitchenStatus KitchenStatus?
+  cashierStatus CashierStatus @default(unpaid)
+  language      String       @default("en")
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  restaurant    Restaurant   @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  customer      User?        @relation("CustomerOrders", fields: [customerId], references: [id])
+  waiter        User?        @relation("WaiterOrders", fields: [waiterId], references: [id])
+  items         OrderItem[]
+  statusEvents  OrderStatusEvent[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id         String   @id @default(uuid())
+  orderId    String
+  menuItemId String
+  name       String
+  quantity   Int
+  price      Float
+  notes      String?
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+
+  @@map("order_items")
+}
+
+model OrderStatusEvent {
+  id        String   @id @default(uuid())
+  orderId   String
+  event     String
+  timestamp DateTime @default(now())
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("order_status_events")
+}

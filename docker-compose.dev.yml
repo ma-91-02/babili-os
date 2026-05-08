@@ -1,4 +1,30 @@
 services:
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-babili}
+      POSTGRES_USER: ${POSTGRES_USER:-babili}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-babili_dev_pass}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U babili"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   web:
     build:
       context: .
@@ -11,6 +37,11 @@ services:
       - /app/apps/web/.next
     environment:
       - NODE_ENV=development
+      - DATABASE_URL=postgresql://babili:babili_dev_pass@postgres:5432/babili?schema=public
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
     command: npm run dev
 
   api-gateway:
@@ -24,6 +55,7 @@ services:
       - /app/node_modules
     environment:
       - PORT=4000
+      - NODE_ENV=development
     command: npx tsx watch src/index.ts
 
   auth-service:
@@ -37,6 +69,11 @@ services:
       - /app/node_modules
     environment:
       - PORT=4001
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://babili:babili_dev_pass@postgres:5432/babili?schema=public
+    depends_on:
+      postgres:
+        condition: service_healthy
     command: npx tsx watch src/index.ts
 
   restaurant-service:
@@ -50,6 +87,11 @@ services:
       - /app/node_modules
     environment:
       - PORT=4002
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://babili:babili_dev_pass@postgres:5432/babili?schema=public
+    depends_on:
+      postgres:
+        condition: service_healthy
     command: npx tsx watch src/index.ts
 
   order-service:
@@ -63,6 +105,11 @@ services:
       - /app/node_modules
     environment:
       - PORT=4003
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://babili:babili_dev_pass@postgres:5432/babili?schema=public
+    depends_on:
+      postgres:
+        condition: service_healthy
     command: npx tsx watch src/index.ts
 
   translation-service:
@@ -76,4 +123,8 @@ services:
       - /app/node_modules
     environment:
       - PORT=4004
+      - NODE_ENV=development
     command: npx tsx watch src/index.ts
+
+volumes:
+  postgres_data:

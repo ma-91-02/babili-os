@@ -4,7 +4,7 @@ const nextConfig = {
   sassOptions: {
     silenceDeprecations: ['legacy-js-api'],
   },
-  transpilePackages: ['@babili/shared'],
+  transpilePackages: ['@babili/shared', '@babili/database'],
 };
 
 module.exports = nextConfig;

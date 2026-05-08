@@ -4,7 +4,8 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "@babili/shared": ["packages/shared/src"]
+      "@babili/shared": ["packages/shared/src"],
+      "@babili/database": ["packages/database/src"]
     }
   },
   "include": [

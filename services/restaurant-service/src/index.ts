@@ -1,231 +1,164 @@
 import express from 'express';
-import {
-  createRestaurant,
-  getRestaurant,
-  getRestaurantBySlug,
-  listRestaurants,
-  updateRestaurant,
-  deleteRestaurant,
-  createMenuSection,
-  listMenuSections,
-  updateMenuSection,
-  deleteMenuSection,
-  createMenuItem,
-  listMenuItems,
-  updateMenuItem,
-  deleteMenuItem,
-  createTable,
-  listTables,
-  updateTable,
-  deleteTable,
-  addEmployee,
-  listEmployees,
-  removeEmployee,
-} from './store';
+import * as repo from './repositories/restaurant.repository';
 
 const app = express();
 const PORT = process.env.PORT || 4002;
 
 app.use(express.json());
 
-app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', service: 'restaurant-service', timestamp: new Date().toISOString() });
+app.get('/health', async (_req, res) => {
+  let dbOk = false;
+  try {
+    const { prisma } = await import('@babili/database');
+    await prisma.$queryRaw`SELECT 1`;
+    dbOk = true;
+  } catch {}
+  res.json({ status: dbOk ? 'ok' : 'degraded', service: 'restaurant-service', database: dbOk ? 'connected' : 'disconnected', timestamp: new Date().toISOString() });
 });
 
-app.post('/api/v1/restaurants', (req, res) => {
+app.post('/api/v1/restaurants', async (req, res) => {
   try {
     const { name, slug, ownerId, language, country, timezone, currencies } = req.body;
     if (!name || !slug || !ownerId) {
       res.status(400).json({ success: false, error: 'Name, slug, and ownerId are required' });
       return;
     }
-    const restaurant = createRestaurant({
-      name,
-      slug,
-      ownerId,
-      language,
-      country,
-      timezone,
-      currencies,
-    });
+    const restaurant = await repo.createRestaurant({ name, slug, ownerId, language, country, timezone, currencies });
     res.status(201).json({ success: true, data: restaurant });
   } catch (error) {
     res.status(409).json({ success: false, error: (error as Error).message });
   }
 });
 
-app.get('/api/v1/restaurants', (req, res) => {
+app.get('/api/v1/restaurants', async (req, res) => {
   const ownerId = req.query.ownerId as string | undefined;
-  const all = listRestaurants(ownerId);
+  const all = await repo.listRestaurants(ownerId);
   res.json({ success: true, data: all });
 });
 
-app.get('/api/v1/restaurants/:id', (req, res) => {
-  const restaurant = getRestaurant(req.params.id);
-  if (!restaurant) {
-    res.status(404).json({ success: false, error: 'Restaurant not found' });
-    return;
-  }
+app.get('/api/v1/restaurants/:id', async (req, res) => {
+  const restaurant = await repo.findRestaurantById(req.params.id);
+  if (!restaurant) { res.status(404).json({ success: false, error: 'Restaurant not found' }); return; }
   res.json({ success: true, data: restaurant });
 });
 
-app.put('/api/v1/restaurants/:id', (req, res) => {
-  const restaurant = updateRestaurant(req.params.id, req.body);
-  if (!restaurant) {
-    res.status(404).json({ success: false, error: 'Restaurant not found' });
-    return;
-  }
+app.put('/api/v1/restaurants/:id', async (req, res) => {
+  try {
+    const restaurant = await repo.updateRestaurant(req.params.id, req.body);
+    res.json({ success: true, data: restaurant });
+  } catch { res.status(404).json({ success: false, error: 'Restaurant not found' }); }
+});
+
+app.delete('/api/v1/restaurants/:id', async (req, res) => {
+  try {
+    await repo.deleteRestaurant(req.params.id);
+    res.json({ success: true, data: { message: 'Restaurant deleted' } });
+  } catch { res.status(404).json({ success: false, error: 'Restaurant not found' }); }
+});
+
+app.get('/api/v1/restaurants/slug/:slug', async (req, res) => {
+  const restaurant = await repo.findRestaurantBySlug(req.params.slug);
+  if (!restaurant) { res.status(404).json({ success: false, error: 'Restaurant not found' }); return; }
   res.json({ success: true, data: restaurant });
 });
 
-app.delete('/api/v1/restaurants/:id', (req, res) => {
-  const deleted = deleteRestaurant(req.params.id);
-  if (!deleted) {
-    res.status(404).json({ success: false, error: 'Restaurant not found' });
-    return;
-  }
-  res.json({ success: true, data: { message: 'Restaurant deleted' } });
-});
-
-app.get('/api/v1/restaurants/slug/:slug', (req, res) => {
-  const restaurant = getRestaurantBySlug(req.params.slug);
-  if (!restaurant) {
-    res.status(404).json({ success: false, error: 'Restaurant not found' });
-    return;
-  }
-  res.json({ success: true, data: restaurant });
-});
-
-app.post('/api/v1/restaurants/:restaurantId/sections', (req, res) => {
+app.post('/api/v1/restaurants/:restaurantId/sections', async (req, res) => {
   const { name, sortOrder } = req.body;
-  if (!name) {
-    res.status(400).json({ success: false, error: 'Section name is required' });
-    return;
-  }
-  const section = createMenuSection(req.params.restaurantId, name, sortOrder);
+  if (!name) { res.status(400).json({ success: false, error: 'Section name is required' }); return; }
+  const section = await repo.createMenuSection(req.params.restaurantId, name, sortOrder);
   res.status(201).json({ success: true, data: section });
 });
 
-app.get('/api/v1/restaurants/:restaurantId/sections', (req, res) => {
-  const sections = listMenuSections(req.params.restaurantId);
+app.get('/api/v1/restaurants/:restaurantId/sections', async (req, res) => {
+  const sections = await repo.listMenuSections(req.params.restaurantId);
   res.json({ success: true, data: sections });
 });
 
-app.put('/api/v1/sections/:id', (req, res) => {
-  const section = updateMenuSection(req.params.id, req.body);
-  if (!section) {
-    res.status(404).json({ success: false, error: 'Section not found' });
-    return;
-  }
-  res.json({ success: true, data: section });
+app.put('/api/v1/sections/:id', async (req, res) => {
+  try {
+    const section = await repo.updateMenuSection(req.params.id, req.body);
+    res.json({ success: true, data: section });
+  } catch { res.status(404).json({ success: false, error: 'Section not found' }); }
 });
 
-app.delete('/api/v1/sections/:id', (req, res) => {
-  const deleted = deleteMenuSection(req.params.id);
-  if (!deleted) {
-    res.status(404).json({ success: false, error: 'Section not found' });
-    return;
-  }
-  res.json({ success: true, data: { message: 'Section deleted' } });
+app.delete('/api/v1/sections/:id', async (req, res) => {
+  try {
+    await repo.deleteMenuSection(req.params.id);
+    res.json({ success: true, data: { message: 'Section deleted' } });
+  } catch { res.status(404).json({ success: false, error: 'Section not found' }); }
 });
 
-app.post('/api/v1/restaurants/:restaurantId/items', (req, res) => {
-  const { sectionId, name, description, price, currency, ingredients } = req.body;
+app.post('/api/v1/restaurants/:restaurantId/items', async (req, res) => {
+  const { sectionId, name, description, price, currency } = req.body;
   if (!sectionId || !name || price === undefined) {
     res.status(400).json({ success: false, error: 'SectionId, name, and price are required' });
     return;
   }
-  const item = createMenuItem({
-    restaurantId: req.params.restaurantId,
-    sectionId,
-    name,
-    description,
-    price,
-    currency,
-    ingredients,
-  });
+  const item = await repo.createMenuItem({ restaurantId: req.params.restaurantId, sectionId, name, description, price, currency });
   res.status(201).json({ success: true, data: item });
 });
 
-app.get('/api/v1/restaurants/:restaurantId/items', (req, res) => {
+app.get('/api/v1/restaurants/:restaurantId/items', async (req, res) => {
   const sectionId = req.query.sectionId as string | undefined;
-  const items = listMenuItems(req.params.restaurantId, sectionId);
+  const items = await repo.listMenuItems(req.params.restaurantId, sectionId);
   res.json({ success: true, data: items });
 });
 
-app.put('/api/v1/items/:id', (req, res) => {
-  const item = updateMenuItem(req.params.id, req.body);
-  if (!item) {
-    res.status(404).json({ success: false, error: 'Item not found' });
-    return;
-  }
-  res.json({ success: true, data: item });
+app.put('/api/v1/items/:id', async (req, res) => {
+  try {
+    const item = await repo.updateMenuItem(req.params.id, req.body);
+    res.json({ success: true, data: item });
+  } catch { res.status(404).json({ success: false, error: 'Item not found' }); }
 });
 
-app.delete('/api/v1/items/:id', (req, res) => {
-  const deleted = deleteMenuItem(req.params.id);
-  if (!deleted) {
-    res.status(404).json({ success: false, error: 'Item not found' });
-    return;
-  }
-  res.json({ success: true, data: { message: 'Item deleted' } });
+app.delete('/api/v1/items/:id', async (req, res) => {
+  try {
+    await repo.deleteMenuItem(req.params.id);
+    res.json({ success: true, data: { message: 'Item deleted' } });
+  } catch { res.status(404).json({ success: false, error: 'Item not found' }); }
 });
 
-app.post('/api/v1/restaurants/:restaurantId/tables', (req, res) => {
+app.post('/api/v1/restaurants/:restaurantId/tables', async (req, res) => {
   const { tableNumber, capacity } = req.body;
-  if (!tableNumber) {
-    res.status(400).json({ success: false, error: 'Table number is required' });
-    return;
-  }
-  const table = createTable(req.params.restaurantId, tableNumber, capacity);
+  if (!tableNumber) { res.status(400).json({ success: false, error: 'Table number is required' }); return; }
+  const table = await repo.createTable(req.params.restaurantId, tableNumber, capacity);
   res.status(201).json({ success: true, data: table });
 });
 
-app.get('/api/v1/restaurants/:restaurantId/tables', (req, res) => {
-  const all = listTables(req.params.restaurantId);
+app.get('/api/v1/restaurants/:restaurantId/tables', async (req, res) => {
+  const all = await repo.listTables(req.params.restaurantId);
   res.json({ success: true, data: all });
 });
 
-app.put('/api/v1/tables/:id', (req, res) => {
-  const table = updateTable(req.params.id, req.body);
-  if (!table) {
-    res.status(404).json({ success: false, error: 'Table not found' });
-    return;
-  }
-  res.json({ success: true, data: table });
+app.put('/api/v1/tables/:id', async (req, res) => {
+  try {
+    const table = await repo.updateTable(req.params.id, req.body);
+    res.json({ success: true, data: table });
+  } catch { res.status(404).json({ success: false, error: 'Table not found' }); }
 });
 
-app.delete('/api/v1/tables/:id', (req, res) => {
-  const deleted = deleteTable(req.params.id);
-  if (!deleted) {
-    res.status(404).json({ success: false, error: 'Table not found' });
-    return;
-  }
-  res.json({ success: true, data: { message: 'Table deleted' } });
+app.delete('/api/v1/tables/:id', async (req, res) => {
+  try {
+    await repo.deleteTable(req.params.id);
+    res.json({ success: true, data: { message: 'Table deleted' } });
+  } catch { res.status(404).json({ success: false, error: 'Table not found' }); }
 });
 
-app.post('/api/v1/restaurants/:restaurantId/employees', (req, res) => {
-  const { user } = req.body;
-  if (!user) {
-    res.status(400).json({ success: false, error: 'User data is required' });
-    return;
-  }
-  addEmployee(req.params.restaurantId, user);
-  res.status(201).json({ success: true, data: { message: 'Employee added' } });
+app.post('/api/v1/restaurants/:restaurantId/staff', async (req, res) => {
+  const { userId, role } = req.body;
+  if (!userId || !role) { res.status(400).json({ success: false, error: 'UserId and role are required' }); return; }
+  const staff = await repo.addStaff(req.params.restaurantId, userId, role);
+  res.status(201).json({ success: true, data: staff });
 });
 
-app.get('/api/v1/restaurants/:restaurantId/employees', (req, res) => {
-  const all = listEmployees(req.params.restaurantId);
-  res.json({ success: true, data: all });
+app.get('/api/v1/restaurants/:restaurantId/staff', async (req, res) => {
+  const staff = await repo.listStaff(req.params.restaurantId);
+  res.json({ success: true, data: staff });
 });
 
-app.delete('/api/v1/employees/:userId', (req, res) => {
-  const removed = removeEmployee(req.params.userId);
-  if (!removed) {
-    res.status(404).json({ success: false, error: 'Employee not found' });
-    return;
-  }
-  res.json({ success: true, data: { message: 'Employee removed' } });
+app.delete('/api/v1/staff/:userId', async (req, res) => {
+  await repo.removeStaff(req.params.userId);
+  res.json({ success: true, data: { message: 'Staff removed' } });
 });
 
 app.listen(PORT, () => {
