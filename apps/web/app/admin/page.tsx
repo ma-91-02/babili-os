@@ -1,7 +1,12 @@
+'use client';
+
+import { useAuth } from '@/components/auth/AuthProvider';
+import { AuthGuard } from '@/components/auth/AuthGuard';
 import { t, getBrandName } from '../../lib/i18n';
 import styles from './admin.module.scss';
 
-export default function AdminPage() {
+function AdminContent() {
+  const { user, logout } = useAuth();
   const lang = 'en';
 
   return (
@@ -14,6 +19,12 @@ export default function AdminPage() {
           <span className={styles.navItem}>{t('admin.users', lang)}</span>
           <span className={styles.navItem}>{t('nav.settings', lang)}</span>
         </nav>
+        <div className={styles.sidebarFooter}>
+          <span className={styles.userInfo}>{user?.email}</span>
+          <button onClick={logout} className={styles.logoutBtn}>
+            {t('auth.logout', lang)}
+          </button>
+        </div>
       </aside>
       <main className={styles.main}>
         <header className={styles.header}>
@@ -27,5 +38,13 @@ export default function AdminPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function AdminPage() {
+  return (
+    <AuthGuard allowedRoles={['platform_owner', 'platform_admin']}>
+      <AdminContent />
+    </AuthGuard>
   );
 }

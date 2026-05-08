@@ -1,0 +1,67 @@
+'use client';
+
+import { useEffect, type ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from './AuthProvider';
+
+interface AuthGuardProps {
+  children: ReactNode;
+  allowedRoles?: string[];
+  fallback?: ReactNode;
+}
+
+export function AuthGuard({ children, allowedRoles, fallback }: AuthGuardProps) {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (loading) return;
+
+    if (!user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+          color: '#6b6b80',
+        }}
+      >
+        Loading...
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    if (fallback) return <>{fallback}</>;
+    return (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+          flexDirection: 'column',
+          gap: '1rem',
+          padding: '2rem',
+          textAlign: 'center',
+        }}
+      >
+        <h1>Access Denied</h1>
+        <p style={{ color: '#6b6b80' }}>You do not have permission to access this page.</p>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
+}

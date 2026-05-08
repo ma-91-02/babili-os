@@ -186,7 +186,7 @@ npm run db:studio
 
 ## [CURRENT MILESTONE]
 
-**Phase 11 — Auth Middleware + Route Protection + Service-to-Service Security Foundation** ✅ Complete
+**Phase 12 — Web Platform Authentication** ✅ Complete
 
 ## [COMPLETED]
 
@@ -334,13 +334,30 @@ npm run db:studio
 - [x] docs/deployment.md — Env vars, internal token setup, security checklist
 - [x] All 154 tests pass (105 existing + 49 new)
 
+### Phase 12 — Web Platform Authentication
+
+- [x] Auth i18n translation keys (email, password, name, signIn, signUp, etc.) in 25 languages
+- [x] Next.js API routes for auth bridge: /api/auth/login, /api/auth/logout, /api/auth/session, /api/auth/register
+- [x] HTTP-only cookie session management (secure in production, sameSite lax, 30-day expiry)
+- [x] AuthProvider React context with useAuth() hook (session restore on mount, login/logout/register methods)
+- [x] AuthGuard client component for role-based route protection (loading state, redirect to login, role gating)
+- [x] Login page with email/password form, language selector, error display, Suspense boundary
+- [x] Register page with name/email/password form, language selector
+- [x] Role-based redirect after login (platform_owner/admin → /admin, restaurant roles → /restaurant, staff roles → /staff)
+- [x] Next.js middleware for route protection (checks session_token cookie, redirects to /login with ?redirect= param)
+- [x] Protected platforms: admin (platform_owner, platform_admin), restaurant (all restaurant roles), staff (waiter/kitchen/cashier/manager)
+- [x] Public platforms: landing (/), customer (/customer), QR ordering (/r/[slug]), login, register
+- [x] Logout with session token cleanup via auth-service + cookie clearing, full page redirect
+- [x] Sidebar user email display and logout button on admin, restaurant, staff pages
+- [x] API_GATEWAY_URL config in apps/web/.env.example
+- [x] AuthProvider wraps root layout for session restoration on every page load
+- [x] Next.js build passes (14 routes + middleware, 0 errors)
+- [x] All 154 existing tests pass — no regressions
+- [x] Prettier format — all files clean
+
 ## [ORPHANS & PENDING]
 
 - [ ] Real-time communication (SSE/WebSocket) — Phase 6 structure exists but no real-time
-- [ ] Admin authentication — pages are public (pre-auth)
-- [ ] Restaurant authentication — pages are public (pre-auth)
-- [ ] Staff authentication — pages are public (pre-auth)
-- [ ] Customer authentication — pages are public (pre-auth)
 - [ ] QR code generation — stub exists
 - [ ] Payment provider integration — post-MVP
 - [ ] Full inventory system — post-MVP
@@ -354,26 +371,23 @@ npm run db:studio
 - [ ] RTL comprehensive testing — structure exists, needs verification
 - [ ] Redis usage in business logic — foundation only, not yet consuming
 - [ ] Redis session store — sessions currently in PostgreSQL
+- [ ] Middleware checks cookie existence only (not session validity) — actual verification on client side
 
 ## [RISKS]
 
 - **No real-time:** Kitchen queue is poll-based, no push notifications
-- **No service-to-service auth:** Gateway routes are open
 - **No HTTPS:** Development only
 - **Translation duplication:** web lib has duplicate translation data from service
+- **Middleware cookie-only check:** Middleware checks cookie existence only, not session validity — actual verification happens on client side via AuthProvider
+- **Service-to-service auth:** Uses shared INTERNAL_SERVICE_TOKEN (adequate for MVP, not production-grade mTLS)
 - **Vitest 4.x engines warning:** vitest 4.1.5 engine requires Node ^20/^22/>=24 but works on Node 23 (cosmetic warning only)
 - **Test isolation:** DB tests share a single Postgres instance; tests clean up test-specific data but cannot run fully in parallel
 - **Redis not used yet:** Client ready, but no business logic consumes it
+- **No refresh token mechanism:** Session tokens live until explicit logout
 
 ## [NEXT STEPS]
 
-**Phase 12 — Web Platform Authentication** (next)
-
-- Add login/register/session to web platforms
-- Protect admin, restaurant, staff routes with auth
-- Customer QR ordering remains public
-
-**Phase 13 — Real-time Communication** (future)
+**Phase 13 — Real-time Communication** (next)
 
 - WebSocket or SSE for kitchen queue, order updates
 - Real-time push notifications

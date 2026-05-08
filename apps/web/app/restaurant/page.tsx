@@ -1,7 +1,12 @@
+'use client';
+
+import { useAuth } from '@/components/auth/AuthProvider';
+import { AuthGuard } from '@/components/auth/AuthGuard';
 import { t, getBrandName } from '../../lib/i18n';
 import styles from './restaurant.module.scss';
 
-export default function RestaurantPage() {
+function RestaurantContent() {
+  const { user, logout } = useAuth();
   const lang = 'en';
 
   return (
@@ -18,6 +23,12 @@ export default function RestaurantPage() {
           <span className={styles.navItem}>{t('nav.staff', lang)}</span>
           <span className={styles.navItem}>{t('nav.settings', lang)}</span>
         </nav>
+        <div className={styles.sidebarFooter}>
+          <span className={styles.userInfo}>{user?.email}</span>
+          <button onClick={logout} className={styles.logoutBtn}>
+            {t('auth.logout', lang)}
+          </button>
+        </div>
       </aside>
       <main className={styles.main}>
         <header className={styles.header}>
@@ -31,5 +42,15 @@ export default function RestaurantPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function RestaurantPage() {
+  return (
+    <AuthGuard
+      allowedRoles={['restaurant_owner', 'manager', 'cashier', 'kitchen', 'waiter', 'viewer']}
+    >
+      <RestaurantContent />
+    </AuthGuard>
   );
 }

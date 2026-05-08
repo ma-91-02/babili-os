@@ -1,7 +1,12 @@
+'use client';
+
+import { useAuth } from '@/components/auth/AuthProvider';
+import { AuthGuard } from '@/components/auth/AuthGuard';
 import { t, getBrandName } from '../../lib/i18n';
 import styles from './staff.module.scss';
 
-export default function StaffPage() {
+function StaffContent() {
+  const { user, logout } = useAuth();
   const lang = 'en';
 
   return (
@@ -15,6 +20,12 @@ export default function StaffPage() {
           <span className={styles.navItem}>{t('nav.cashier', lang)}</span>
           <span className={styles.navItem}>{t('nav.tables', lang)}</span>
         </nav>
+        <div className={styles.sidebarFooter}>
+          <span className={styles.userInfo}>{user?.email}</span>
+          <button onClick={logout} className={styles.logoutBtn}>
+            {t('auth.logout', lang)}
+          </button>
+        </div>
       </aside>
       <main className={styles.main}>
         <header className={styles.header}>
@@ -28,5 +39,13 @@ export default function StaffPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function StaffPage() {
+  return (
+    <AuthGuard allowedRoles={['waiter', 'kitchen', 'cashier', 'manager']}>
+      <StaffContent />
+    </AuthGuard>
   );
 }
