@@ -5,7 +5,8 @@
     "baseUrl": ".",
     "paths": {
       "@babili/shared": ["packages/shared/src"],
-      "@babili/database": ["packages/database/src"]
+      "@babili/database": ["packages/database/src"],
+      "@/*": ["apps/web/*"]
     }
   },
   "include": [

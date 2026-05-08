@@ -79,6 +79,18 @@ npm run docker:dev
 npm run docker:prod
 ```
 
+### Health Check
+
+```bash
+npm run health
+```
+
+Checks all 6 services (Web, API Gateway, Auth, Restaurant, Order, Translation).
+
+## Troubleshooting
+
+See [docs/running.md](docs/running.md) for troubleshooting 500 errors, port conflicts, and database issues.
+
 ## Project Structure
 
 ```

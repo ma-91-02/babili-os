@@ -186,7 +186,15 @@ npm run db:studio
 
 ## [CURRENT MILESTONE]
 
-**Phase 13 — Real-time Communication** ✅ Complete
+**Phase 10.3 — Stabilize Local Development Runtime and Fix Remaining Verification Issues** ✅ Complete
+
+- http://localhost:3000/ returns 200 and renders the Babili landing page correctly
+- predev script kills stale :3000 processes before starting dev server
+- npm run health script checks all 6 services
+- docs/running.md with complete local dev workflow and troubleshooting
+- All 154 tests pass, format clean, build succeeds
+- TypeScript errors fixed: added missing `@/*` path alias to root tsconfig.json (22 TS2307/TS7006 errors resolved)
+- `npm run typecheck` passes with 0 errors
 
 ## [COMPLETED]
 
@@ -371,9 +379,24 @@ npm run db:studio
 - [x] All 154 tests pass — no regressions
 - [x] Prettier format — all files clean
 
+### Phase 10.3 — Stabilize Local Development Runtime and Fix Remaining Verification Issues
+
+- [x] Diagnosed root cause: stale Next.js dev server process on port 3000 serving broken page
+- [x] Verified http://localhost:3000/ returns 200 with correct Babili landing page HTML
+- [x] Added `predev` script to auto-kill stale :3000 processes before `npm run dev`
+- [x] Added `npm run health` script checking all 6 services (Web App, API Gateway, Auth, Restaurant, Order, Translation)
+- [x] Created docs/running.md with complete local dev setup, troubleshooting, and health check guide
+- [x] Updated README.md with health script reference
+- [x] Added [LOCAL DEVELOPMENT STABILITY] section to PROJECT_MAP.md
+- [x] Cleaned up duplicate/misplaced content in PROJECT_MAP.md NEXT STEPS
+- [x] Fixed 22 TypeScript errors: root tsconfig.json missing `@/*` path alias
+- [x] Formatter check passes
+- [x] All 154 tests pass (no regressions)
+- [x] TypeScript typecheck passes (0 errors)
+- [x] Next.js build succeeds (15 routes + middleware, 0 errors)
+
 ## [ORPHANS & PENDING]
 
-- [ ] Real-time communication (SSE/WebSocket) — Phase 6 structure exists but no real-time
 - [ ] QR code generation — stub exists
 - [ ] Payment provider integration — post-MVP
 - [ ] Full inventory system — post-MVP
@@ -388,6 +411,15 @@ npm run db:studio
 - [ ] Redis usage in business logic — foundation only, not yet consuming
 - [ ] Redis session store — sessions currently in PostgreSQL
 - [ ] Middleware checks cookie existence only (not session validity) — actual verification on client side
+
+## [LOCAL DEVELOPMENT STABILITY]
+
+- http://localhost:3000/ must return 200 before any task is considered complete
+- 500 / runtime errors are blockers — must be fixed before proceeding
+- `npm run health` checks all 6 services; failures must be documented or fixed
+- `npm run dev` auto-kills stale processes on port 3000 via `predev` script
+- docs/running.md documents the full local dev workflow
+- After any `git pull`, run: `npm install && npm run db:migrate:dev && npm run dev`
 
 ## [RISKS]
 
@@ -405,6 +437,7 @@ npm run db:studio
 ## [NEXT STEPS]
 
 **No further phases planned.** The MVP is feature-complete with:
+
 - Phase 1: Project Foundation
 - Phase 2: Shared Core
 - Phase 3: Translation Service
@@ -420,6 +453,7 @@ npm run db:studio
 - Phase 13: Real-time Communication
 
 **Post-MVP candidates:**
+
 - Payment gateway integration
 - Full inventory system
 - Full finance/reporting system
@@ -430,13 +464,3 @@ npm run db:studio
 - Domain routing configuration
 - Coolify deployment configuration
 - RTL comprehensive testing
-
-- WebSocket or SSE for kitchen queue, order updates
-- Real-time push notifications
-
-**Post-MVP:**
-
-- Redis + WebSocket for real-time
-- Authentication on all pages
-- Payment gateway integration
-- Mobile app

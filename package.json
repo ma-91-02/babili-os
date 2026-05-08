@@ -9,6 +9,7 @@
     "services/*"
   ],
   "scripts": {
+    "predev": "node -e \"try{process.kill(require('child_process').execSync('lsof -ti:3000').toString().trim(),'SIGTERM')}catch(e){}\" 2>/dev/null || true",
     "dev": "npm run dev --workspace=apps/web",
     "build": "npm run build --workspace=apps/web",
     "lint": "npm run lint --workspace=apps/web",
@@ -17,6 +18,7 @@
     "test:watch": "vitest",
     "format": "prettier --write \"**/*.{ts,tsx,json,scss,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,json,scss,md}\"",
+    "health": "node scripts/health.mjs",
     "clean": "rm -rf apps/*/.next apps/*/node_modules node_modules packages/*/node_modules services/*/node_modules",
     "db:generate": "npm run generate --workspace=@babili/database",
     "db:migrate:dev": "npm run migrate:dev --workspace=@babili/database",
