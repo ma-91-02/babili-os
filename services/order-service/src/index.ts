@@ -6,8 +6,10 @@ import {
   isInternalRequest,
   roleHasAtLeast,
   isPlatformRole,
+  ORDER_CHANNEL,
 } from '@babili/shared';
 import type { Role, AuthContext } from '@babili/shared';
+import { subscribeToChannel } from '@babili/database';
 
 const app = express();
 const PORT = process.env.PORT || 4003;
@@ -94,6 +96,46 @@ app.get('/health', async (_req, res) => {
     service: 'order-service',
     database: dbOk ? 'connected' : 'disconnected',
     timestamp: new Date().toISOString(),
+  });
+});
+
+// ─── SSE endpoint (must be before /:id routes) ─────────────────────────────
+
+app.get('/api/v1/orders/events', requireAuth, (req, res) => {
+  const auth = (req as any).authContext as AuthContext;
+  const restaurantId = auth.user?.restaurantId;
+
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    Connection: 'keep-alive',
+    'X-Accel-Buffering': 'no',
+  });
+
+  res.write(`data: ${JSON.stringify({ type: 'connected', message: 'SSE connected' })}\n\n`);
+
+  const keepalive = setInterval(() => {
+    res.write(`:keepalive\n\n`);
+  }, 30000);
+
+  const unsubscribe = subscribeToChannel(ORDER_CHANNEL, (message: string) => {
+    try {
+      const event = JSON.parse(message);
+      if (
+        !restaurantId ||
+        event.restaurantId === restaurantId ||
+        isPlatformRole(auth.user?.role ?? 'viewer')
+      ) {
+        res.write(`event: ${event.type}\ndata: ${message}\n\n`);
+      }
+    } catch {
+      // ignore malformed messages
+    }
+  });
+
+  req.on('close', () => {
+    clearInterval(keepalive);
+    if (unsubscribe) unsubscribe();
   });
 });
 

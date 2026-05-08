@@ -10,4 +10,11 @@ if (process.env.NODE_ENV !== 'production') {
 
 export default prisma;
 
-export { redis, getRedis } from './redis';
+export {
+  redis,
+  getRedis,
+  getSubscriber,
+  publishEvent,
+  subscribeToChannel,
+  redisHealth,
+} from './redis';

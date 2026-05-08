@@ -2,11 +2,29 @@
 
 import { useAuth } from '@/components/auth/AuthProvider';
 import { AuthGuard } from '@/components/auth/AuthGuard';
+import { useOrderEvents } from '@/lib/sse';
 import { t, getBrandName } from '../../lib/i18n';
+import type { OrderEvent } from '@/lib/sse';
 import styles from './staff.module.scss';
+
+function EventItem({ event }: { event: OrderEvent }) {
+  const time = new Date(event.timestamp).toLocaleTimeString();
+  const typeLabel = event.type.replace('order.', '').replace('.', ' → ');
+  const status = event.data.orderStatus;
+
+  return (
+    <div className={styles.eventItem}>
+      <span className={styles.eventTime}>{time}</span>
+      <span className={styles.eventType}>{typeLabel}</span>
+      <span className={styles.eventOrder}>#{event.orderId.slice(0, 8)}</span>
+      {typeof status === 'string' && <span className={styles.eventStatus}>{status}</span>}
+    </div>
+  );
+}
 
 function StaffContent() {
   const { user, logout } = useAuth();
+  const { events, connected } = useOrderEvents(user?.restaurantId ?? undefined);
   const lang = 'en';
 
   return (
@@ -30,11 +48,27 @@ function StaffContent() {
       <main className={styles.main}>
         <header className={styles.header}>
           <h1>{t('nav.staff', lang)}</h1>
+          <div className={styles.connectionStatus}>
+            <span className={connected ? styles.connected : styles.disconnected} />
+            {connected ? 'Live' : 'Reconnecting...'}
+          </div>
         </header>
         <div className={styles.content}>
           <div className="card">
             <h2>{t('nav.staff', lang)}</h2>
             <p>{t('common.loading', lang)}</p>
+          </div>
+          <div className={styles.eventFeed}>
+            <h3>Real-time Order Events</h3>
+            {events.length === 0 ? (
+              <p className={styles.noEvents}>Waiting for orders...</p>
+            ) : (
+              <div className={styles.eventList}>
+                {events.map((event, i) => (
+                  <EventItem key={`${event.orderId}-${i}`} event={event} />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </main>

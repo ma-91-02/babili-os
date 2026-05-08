@@ -105,6 +105,100 @@
 
 .content {
   padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.connectionStatus {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: $color-text-secondary;
+}
+
+.connected {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: $color-success;
+}
+
+.disconnected {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: $color-warning;
+}
+
+.eventFeed {
+  background: $color-white;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-sm;
+  padding: 1.5rem;
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: $color-text;
+  }
+}
+
+.noEvents {
+  color: $color-text-secondary;
+  font-size: 0.875rem;
+  padding: 1rem 0;
+}
+
+.eventList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.eventItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: $border-radius-sm;
+  background: $color-bg;
+  font-size: 0.8125rem;
+
+  &:hover {
+    background: $color-secondary;
+  }
+}
+
+.eventTime {
+  color: $color-text-secondary;
+  font-size: 0.75rem;
+  min-width: 4rem;
+}
+
+.eventType {
+  color: $color-main;
+  font-weight: 500;
+  min-width: 8rem;
+}
+
+.eventOrder {
+  font-family: monospace;
+  color: $color-text;
+  min-width: 6rem;
+}
+
+.eventStatus {
+  padding: 0.125rem 0.5rem;
+  background: $color-secondary;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: $color-main;
 }
 
 @media (max-width: $breakpoint-lg) {

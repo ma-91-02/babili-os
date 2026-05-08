@@ -1,4 +1,23 @@
-import { prisma } from '@babili/database';
+import { prisma, publishEvent } from '@babili/database';
+import { ORDER_CHANNEL } from '@babili/shared';
+
+function buildOrderEvent(type: string, order: any, extra: Record<string, unknown> = {}) {
+  return {
+    type,
+    orderId: order.id,
+    restaurantId: order.restaurantId,
+    data: {
+      orderStatus: order.orderStatus,
+      kitchenStatus: order.kitchenStatus,
+      cashierStatus: order.cashierStatus,
+      total: order.total,
+      tableId: order.tableId,
+      itemCount: order.items?.length ?? 0,
+      ...extra,
+    },
+    timestamp: new Date().toISOString(),
+  };
+}
 
 export async function createOrder(data: {
   restaurantId: string;
@@ -11,7 +30,7 @@ export async function createOrder(data: {
 }) {
   const total = data.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  return prisma.order.create({
+  const order = await prisma.order.create({
     data: {
       restaurantId: data.restaurantId,
       tableId: data.tableId,
@@ -35,6 +54,9 @@ export async function createOrder(data: {
     },
     include: { items: true, statusEvents: true },
   });
+
+  publishEvent(ORDER_CHANNEL, buildOrderEvent('order.created', order));
+  return order;
 }
 
 export async function findOrderById(id: string) {
@@ -55,7 +77,7 @@ export async function listOrders(restaurantId: string, status?: string) {
 }
 
 export async function updateOrderStatus(id: string, orderStatus: string) {
-  return prisma.order.update({
+  const order = await prisma.order.update({
     where: { id },
     data: {
       orderStatus: orderStatus as any,
@@ -63,26 +85,43 @@ export async function updateOrderStatus(id: string, orderStatus: string) {
     },
     include: { items: true, statusEvents: { orderBy: { timestamp: 'asc' } } },
   });
+
+  publishEvent(ORDER_CHANNEL, buildOrderEvent('order.status', order, { newStatus: orderStatus }));
+  return order;
 }
 
 export async function updateKitchenStatus(id: string, kitchenStatus: string) {
-  return prisma.order.update({
+  const order = await prisma.order.update({
     where: { id },
     data: {
       kitchenStatus: kitchenStatus as any,
       statusEvents: { create: { event: `kitchen.status.${kitchenStatus}` } },
     },
+    include: { items: true, statusEvents: { orderBy: { timestamp: 'asc' } } },
   });
+
+  publishEvent(
+    ORDER_CHANNEL,
+    buildOrderEvent('order.kitchen', order, { newKitchenStatus: kitchenStatus }),
+  );
+  return order;
 }
 
 export async function updateCashierStatus(id: string, cashierStatus: string) {
-  return prisma.order.update({
+  const order = await prisma.order.update({
     where: { id },
     data: {
       cashierStatus: cashierStatus as any,
       statusEvents: { create: { event: `cashier.status.${cashierStatus}` } },
     },
+    include: { items: true, statusEvents: { orderBy: { timestamp: 'asc' } } },
   });
+
+  publishEvent(
+    ORDER_CHANNEL,
+    buildOrderEvent('order.cashier', order, { newCashierStatus: cashierStatus }),
+  );
+  return order;
 }
 
 export async function listActiveOrders(restaurantId: string) {

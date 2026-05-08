@@ -1,6 +1,9 @@
 import Redis from 'ioredis';
 
-const globalForRedis = globalThis as unknown as { redis: Redis | undefined };
+const globalForRedis = globalThis as unknown as {
+  redis: Redis | undefined;
+  subscriber: Redis | undefined;
+};
 
 function createRedis(): Redis | null {
   const url = process.env.REDIS_URL;
@@ -38,6 +41,49 @@ export async function redisHealth(): Promise<boolean> {
     return result === 'PONG';
   } catch {
     return false;
+  }
+}
+
+export function getSubscriber(): Redis | null {
+  if (!globalForRedis.subscriber) {
+    const client = createRedis();
+    if (client) {
+      globalForRedis.subscriber = client;
+    }
+  }
+  return globalForRedis.subscriber ?? null;
+}
+
+export function publishEvent(channel: string, message: object): void {
+  try {
+    const r = getRedis();
+    if (!r) return;
+    r.publish(channel, JSON.stringify(message)).catch(() => {});
+  } catch {
+    // silently fail — Redis is optional
+  }
+}
+
+export function subscribeToChannel(
+  channel: string,
+  callback: (message: string) => void,
+): (() => void) | null {
+  try {
+    const sub = getSubscriber();
+    if (!sub) return null;
+
+    sub.subscribe(channel).catch(() => {});
+    sub.on('message', (ch: string, message: string) => {
+      if (ch === channel) {
+        callback(message);
+      }
+    });
+
+    return () => {
+      sub.unsubscribe(channel).catch(() => {});
+    };
+  } catch {
+    return null;
   }
 }
 

@@ -186,7 +186,7 @@ npm run db:studio
 
 ## [CURRENT MILESTONE]
 
-**Phase 12 — Web Platform Authentication** ✅ Complete
+**Phase 13 — Real-time Communication** ✅ Complete
 
 ## [COMPLETED]
 
@@ -355,6 +355,22 @@ npm run db:studio
 - [x] All 154 existing tests pass — no regressions
 - [x] Prettier format — all files clean
 
+### Phase 13 — Real-time Communication
+
+- [x] Redis pub/sub helpers: publishEvent(), subscribeToChannel(), getSubscriber() in packages/database
+- [x] Order event types defined in packages/shared/src/events.ts (OrderEvent, ORDER_CHANNEL)
+- [x] SSE endpoint in order-service: GET /api/v1/orders/events with auth, restaurant-id filtering, keepalive
+- [x] Order repository publishes events on create, status update, kitchen update, cashier update
+- [x] Redis channel subscription in SSE handler; graceful client disconnect cleanup
+- [x] API Gateway proxy path fix: proxyReq.path corrected for all services (/api/v1/auth, /api/v1/restaurants, /api/v1/orders, /api/v1/translations)
+- [x] Next.js API route bridge: GET /api/orders/events reads cookie, connects to gateway SSE with Bearer token, streams response
+- [x] useOrderEvents React hook: EventSource connection, event parsing, auto-reconnect on error, 100-event buffer
+- [x] Restaurant dashboard shows real-time order event feed with connection status indicator
+- [x] Staff dashboard shows real-time order event feed with connection status indicator
+- [x] Next.js build passes (15 routes + middleware, 0 errors)
+- [x] All 154 tests pass — no regressions
+- [x] Prettier format — all files clean
+
 ## [ORPHANS & PENDING]
 
 - [ ] Real-time communication (SSE/WebSocket) — Phase 6 structure exists but no real-time
@@ -375,19 +391,45 @@ npm run db:studio
 
 ## [RISKS]
 
-- **No real-time:** Kitchen queue is poll-based, no push notifications
+- **Redis required for real-time:** SSE depends on Redis pub/sub; if Redis is down, no real-time events
+- **SSE graceful degradation:** If Redis is unavailable, order mutations still work, but events are silently dropped (publishEvent silently fails)
 - **No HTTPS:** Development only
 - **Translation duplication:** web lib has duplicate translation data from service
 - **Middleware cookie-only check:** Middleware checks cookie existence only, not session validity — actual verification happens on client side via AuthProvider
 - **Service-to-service auth:** Uses shared INTERNAL_SERVICE_TOKEN (adequate for MVP, not production-grade mTLS)
 - **Vitest 4.x engines warning:** vitest 4.1.5 engine requires Node ^20/^22/>=24 but works on Node 23 (cosmetic warning only)
 - **Test isolation:** DB tests share a single Postgres instance; tests clean up test-specific data but cannot run fully in parallel
-- **Redis not used yet:** Client ready, but no business logic consumes it
 - **No refresh token mechanism:** Session tokens live until explicit logout
+- **SSE auto-reconnect:** Browser EventSource auto-reconnects on disconnect with 3s delay (useOrderEvents hook)
 
 ## [NEXT STEPS]
 
-**Phase 13 — Real-time Communication** (next)
+**No further phases planned.** The MVP is feature-complete with:
+- Phase 1: Project Foundation
+- Phase 2: Shared Core
+- Phase 3: Translation Service
+- Phase 4: Auth Service
+- Phase 5: Restaurant Service
+- Phase 6: Order Service
+- Phase 7: API Gateway
+- Phase 8: Web Platforms
+- Phase 9: Documentation and Verification
+- Phase 10: Database Integration + Redis Foundation
+- Phase 11: Auth Middleware + Route Protection + Service-to-Service Security
+- Phase 12: Web Platform Authentication
+- Phase 13: Real-time Communication
+
+**Post-MVP candidates:**
+- Payment gateway integration
+- Full inventory system
+- Full finance/reporting system
+- POS integration
+- Mobile app
+- Offer & stories system
+- Public restaurant page
+- Domain routing configuration
+- Coolify deployment configuration
+- RTL comprehensive testing
 
 - WebSocket or SSE for kitchen queue, order updates
 - Real-time push notifications

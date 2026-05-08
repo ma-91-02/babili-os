@@ -109,6 +109,11 @@ app.get('/api/v1/gateway/routes', (_req, res) => {
           description: 'Order service endpoints (auth required)',
         },
         {
+          path: '/api/v1/orders/events',
+          methods: ['GET'],
+          description: 'Order events SSE stream (auth required)',
+        },
+        {
           path: '/api/v1/translations/*',
           methods: ['GET'],
           description: 'Translation service endpoints (public)',
@@ -162,6 +167,11 @@ async function authMiddleware(req: Request, res: Response, next: NextFunction): 
 const authProxy = createProxyMiddleware({
   target: 'http://localhost:4001',
   changeOrigin: true,
+  on: {
+    proxyReq: (proxyReq, req) => {
+      proxyReq.path = `/api/v1/auth${req.url}`;
+    },
+  },
 });
 
 const restaurantProxy = createProxyMiddleware({
@@ -169,6 +179,7 @@ const restaurantProxy = createProxyMiddleware({
   changeOrigin: true,
   on: {
     proxyReq: (proxyReq, req) => {
+      proxyReq.path = `/api/v1/restaurants${req.url}`;
       const authHeaders = (req as any).authHeaders as Record<string, string> | undefined;
       if (authHeaders) {
         Object.entries(authHeaders).forEach(([key, value]) => {
@@ -184,6 +195,7 @@ const orderProxy = createProxyMiddleware({
   changeOrigin: true,
   on: {
     proxyReq: (proxyReq, req) => {
+      proxyReq.path = `/api/v1/orders${req.url}`;
       const authHeaders = (req as any).authHeaders as Record<string, string> | undefined;
       if (authHeaders) {
         Object.entries(authHeaders).forEach(([key, value]) => {
@@ -197,6 +209,11 @@ const orderProxy = createProxyMiddleware({
 const translationProxy = createProxyMiddleware({
   target: 'http://localhost:4004',
   changeOrigin: true,
+  on: {
+    proxyReq: (proxyReq, req) => {
+      proxyReq.path = `/api/v1/translations${req.url}`;
+    },
+  },
 });
 
 // ─── Routes ──────────────────────────────────────────────────────────────────
