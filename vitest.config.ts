@@ -1,7 +1,9 @@
 import { defineConfig } from 'vitest/config';
 import path from 'path';
 
-process.env.DATABASE_URL = process.env.DATABASE_URL || 'postgresql://babili:babili_dev_pass@localhost:5432/babili?schema=public';
+process.env.DATABASE_URL =
+  process.env.DATABASE_URL ||
+  'postgresql://babili:babili_dev_pass@localhost:5432/babili?schema=public';
 
 export default defineConfig({
   resolve: {

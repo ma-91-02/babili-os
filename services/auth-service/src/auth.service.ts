@@ -59,7 +59,12 @@ export async function login(email: string, password: string): Promise<AuthResult
     return { success: false, error: 'Invalid email or password', status: 401 };
   }
 
-  const session = await sessionRepo.createSession(user.id, user.email, user.role, user.restaurantId);
+  const session = await sessionRepo.createSession(
+    user.id,
+    user.email,
+    user.role,
+    user.restaurantId,
+  );
 
   return {
     success: true,

@@ -19,10 +19,10 @@ Babili is a SaaS restaurant operating system that connects tables, kitchen, and 
 
 - **Monorepo:** npm workspaces
 - **Frontend:** Next.js 15, TypeScript, SCSS Modules
-- **Backend:** Node.js, TypeScript, Express
-- **Database:** PostgreSQL
-- **Cache/Realtime:** Redis, SSE/WebSocket
-- **Testing:** Vitest
+- **Backend:** Node.js 23, TypeScript, Express
+- **Database:** PostgreSQL 16 with Prisma 6 ORM
+- **Cache:** Redis 7 via ioredis
+- **Testing:** Vitest 4, Supertest
 - **Deployment:** Docker, Docker Compose, Coolify-ready
 
 ## Getting Started
@@ -31,12 +31,25 @@ Babili is a SaaS restaurant operating system that connects tables, kitchen, and 
 
 - Node.js >= 20
 - npm >= 10
+- Docker (for PostgreSQL and Redis)
 
 ### Local Development
 
 ```bash
 # Install dependencies
 npm install
+
+# Copy environment file
+cp .env.example .env
+
+# Start PostgreSQL and Redis
+docker compose -f docker-compose.dev.yml up -d postgres redis
+
+# Run database migrations
+npm run db:migrate:dev
+
+# Generate Prisma client
+npm run db:generate
 
 # Start development server
 npm run dev
@@ -49,6 +62,9 @@ npm run typecheck
 
 # Format code
 npm run format
+
+# Open Prisma Studio (database GUI)
+npm run db:studio
 ```
 
 ### Docker Development
@@ -67,18 +83,46 @@ npm run docker:prod
 
 ```
 babili/
-├── apps/web/          # Next.js web application
-├── services/          # Backend microservices
+├── apps/web/              # Next.js web application
+├── services/              # Backend microservices
 │   ├── api-gateway/
 │   ├── auth-service/
 │   ├── restaurant-service/
 │   ├── order-service/
 │   └── translation-service/
-├── packages/shared/   # Shared types, constants, utilities
-├── docs/              # Documentation
-├── scripts/           # Utility scripts
+├── packages/
+│   ├── shared/            # Shared types, constants, utilities
+│   └── database/          # Prisma client + Redis client
+├── docs/                  # Documentation
 └── docker-compose.yml
 ```
+
+## Database
+
+- **ORM:** Prisma 6
+- **Provider:** PostgreSQL 16
+- **Client:** `@babili/database` package
+- **Schema:** `packages/database/prisma/schema.prisma`
+- **Migration:** Initial migration applied (all core models)
+
+### Database Scripts
+
+```bash
+npm run db:generate        # Generate Prisma client
+npm run db:migrate:dev     # Apply migrations (dev)
+npm run db:migrate:deploy  # Apply migrations (prod)
+npm run db:studio          # Open Prisma Studio
+```
+
+## Services Storage
+
+| Service             | Storage    | Notes                             |
+| ------------------- | ---------- | --------------------------------- |
+| auth-service        | PostgreSQL | Users, sessions, tokens           |
+| restaurant-service  | PostgreSQL | Restaurants, menus, tables, staff |
+| order-service       | PostgreSQL | Orders, items, status events      |
+| translation-service | In-memory  | Static translation data           |
+| api-gateway         | None       | Stateless routing                 |
 
 ## Supported Languages
 

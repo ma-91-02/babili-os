@@ -19,13 +19,13 @@ Babili is a smart multilingual SaaS restaurant operating system. It enables digi
 
 - **Monorepo:** npm workspaces
 - **Frontend:** Next.js 15, React 19, TypeScript 5.3, SCSS Modules
-- **Backend:** Node.js 20, Express 4, TypeScript
-- **Testing:** Vitest, Supertest
+- **Backend:** Node.js 23, Express 4, TypeScript
+- **Database:** PostgreSQL 16 with Prisma 6 ORM (connected)
+- **Cache:** Redis 7 foundation with ioredis (lazy-connect, configured in compose)
+- **Testing:** Vitest 4, Supertest
 - **Deployment:** Docker, Docker Compose (dev + prod), Coolify-ready
 - **Lint/Format:** Prettier
-- **Auth:** bcryptjs, UUID-based sessions
-- **Database:** PostgreSQL (not yet connected)
-- **Cache/Realtime:** Redis (not yet connected), SSE/WebSocket (planned)
+- **Auth:** bcryptjs, UUID-based sessions via Prisma DB
 
 ## [SYSTEM FLOW]
 
@@ -42,8 +42,9 @@ Babili is a smart multilingual SaaS restaurant operating system. It enables digi
 - apps/web: Next.js App Router with 5 platform routes
 - services/: 5 Express microservices, each on separate port
 - packages/shared: shared types, constants, permissions, tenant helpers
+- packages/database: Prisma client + Redis client shared across services
 - Translation: centralized in translation-service + web lib
-- Auth: in-memory store (MVP), JWT/session based
+- Auth: Prisma DB sessions (JWT/session based)
 - API Gateway: routes health checks, service discovery
 - Tenant isolation via restaurantId scoping
 
@@ -116,31 +117,77 @@ Not yet configured. Planned:
 
 Not yet configured. Docker Compose files ready.
 
+## [DATABASE]
+
+- **ORM:** Prisma 6.19.3
+- **Provider:** PostgreSQL 16
+- **Client generated:** `@prisma/client` at root node_modules
+- **Package:** `@babili/database` at packages/database
+- **Schema:** packages/database/prisma/schema.prisma
+- **Migration applied:** 20260508132520_init (all models created)
+
+### Models
+
+- User, Session, EmailVerificationToken, PasswordResetToken
+- Restaurant, RestaurantStaff, RestaurantTable
+- MenuSection, MenuItem, Ingredient, MenuItemIngredient
+- Order, OrderItem, OrderStatusEvent
+
+### Redis
+
+- **Client:** ioredis 5.4
+- **Connection:** Lazy-connect, graceful fallback if REDIS_URL not set
+- **Health:** redisHealth() ping check
+- **Usage:** Foundation in place, not yet used by business logic
+
 ## [LOCAL DEVELOPMENT]
 
 ```bash
+# Install dependencies
 npm install
-npm run dev              # Next.js on :3000
-npm test                 # Vitest — 115 tests
-npm run typecheck        # TypeScript check
-npm run format           # Prettier
-cd apps/web && npx next build  # Production build
+
+# Copy environment file
+cp .env.example .env
+
+# Start PostgreSQL and Redis (Docker)
+npm run docker:dev          # or: docker compose -f docker-compose.dev.yml up -d postgres redis
+
+# Run database migrations
+npm run db:migrate:dev      # Apply Prisma migrations to dev DB
+
+# Generate Prisma client
+npm run db:generate
+
+# Start dev servers
+npm run dev                 # Next.js on :3000
+
+# Run tests
+npm test                    # All 105 tests pass
+
+# Type check
+npm run typecheck
+
+# Format
+npm run format
+
+# Prisma Studio (DB GUI)
+npm run db:studio
 ```
 
 ## [MICROSERVICES]
 
-| Service             | Port | Package                     | Status                                                       |
-| ------------------- | ---- | --------------------------- | ------------------------------------------------------------ |
-| API Gateway         | 4000 | @babili/api-gateway         | Running with health/routes/services endpoints                |
-| Auth Service        | 4001 | @babili/auth-service        | Register, login, logout, verify email, forgot/reset password |
-| Restaurant Service  | 4002 | @babili/restaurant-service  | CRUD restaurants, menu sections, items, tables, employees    |
-| Order Service       | 4003 | @babili/order-service       | Create orders, status flow, kitchen queue, cashier, history  |
-| Translation Service | 4004 | @babili/translation-service | 25 languages, coverage validator, all endpoints              |
+| Service             | Port | Package                     | Storage    | Status                                                       |
+| ------------------- | ---- | --------------------------- | ---------- | ------------------------------------------------------------ |
+| API Gateway         | 4000 | @babili/api-gateway         | None       | Running with health/routes/services endpoints                |
+| Auth Service        | 4001 | @babili/auth-service        | PostgreSQL | Register, login, logout, verify email, forgot/reset password |
+| Restaurant Service  | 4002 | @babili/restaurant-service  | PostgreSQL | CRUD restaurants, menu sections, items, tables, employees    |
+| Order Service       | 4003 | @babili/order-service       | PostgreSQL | Create orders, status flow, kitchen queue, cashier, history  |
+| Translation Service | 4004 | @babili/translation-service | In-memory  | 25 languages, coverage validator, all endpoints              |
 
 ## [CURRENT MILESTONE]
 
-**Phase 8 — Web Platforms** ✅ Complete
-**Next: Phase 9 — Documentation and Verification**
+**Phase 10 — Database Integration + Redis Foundation** ✅ Complete
+**Next: Phase 11 — Auth Middleware / Service-to-Service Auth**
 
 ## [COMPLETED]
 
@@ -184,28 +231,29 @@ cd apps/web && npx next build  # Production build
 
 ### Phase 4 — Auth Service
 
-- [x] User registration with password hashing (bcryptjs)
-- [x] User login with session token
+- [x] User registration with password hashing (bcryptjs) via Prisma
+- [x] User login with session token via Prisma
 - [x] User logout
 - [x] Get current user (/me)
 - [x] Email verification structure
 - [x] Forgot password structure
 - [x] Password reset
-- [x] 12 tests for auth
+- [x] 8 tests with real database
 
 ### Phase 5 — Restaurant Service
 
-- [x] Restaurant CRUD
-- [x] Menu section CRUD
-- [x] Menu item CRUD
-- [x] Table CRUD
-- [x] Employee management
+- [x] Restaurant CRUD via Prisma
+- [x] Menu section CRUD via Prisma
+- [x] Menu item CRUD via Prisma
+- [x] Table CRUD via Prisma
+- [x] Employee management via Prisma
+- [x] Ingredient management via Prisma
 - [x] Slug-based lookup
-- [x] 16 tests
+- [x] 12 tests with real database
 
 ### Phase 6 — Order Service
 
-- [x] Create order with auto total calculation
+- [x] Create order with auto total calculation via Prisma
 - [x] Order status flow (pending → confirmed → preparing → ready → delivered)
 - [x] Kitchen status tracking
 - [x] Cashier status tracking
@@ -213,7 +261,7 @@ cd apps/web && npx next build  # Production build
 - [x] Order history / event log
 - [x] Active orders filtering
 - [x] Table-based order lookup
-- [x] 11 tests
+- [x] 9 tests with real database
 
 ### Phase 7 — API Gateway
 
@@ -233,10 +281,31 @@ cd apps/web && npx next build  # Production build
 - [x] Babylon-inspired visual design
 - [x] Official Babili colors throughout
 
+### Phase 9 — Documentation and Verification
+
+- [x] Prettier format check
+- [x] TypeScript typecheck
+- [x] Test suite verification
+- [x] Architecture documentation
+
+### Phase 10 — Database Integration + Redis Foundation
+
+- [x] packages/database with Prisma + Redis client (January 2026)
+- [x] Prisma schema with all models (User, Restaurant, Menu, Order, etc.)
+- [x] Initial migration applied (20260508132520_init)
+- [x] PostgreSQL + Redis added to Docker Compose (dev + prod)
+- [x] Auth service migrated from in-memory to Prisma repositories
+- [x] Restaurant service migrated from in-memory to Prisma repositories
+- [x] Order service migrated from in-memory to Prisma repositories
+- [x] Redis client with lazy-connect and graceful fallback
+- [x] Repository pattern established for all DB operations
+- [x] All tests pass with real database (105 tests, 9 suites)
+- [x] Vitest 4 + Vite 8 confirmed working on Node 23
+- [x] Order test fixed: menuItem Prisma relation connect, beforeAll variable hoisting fix
+- [x] Package.json scripts: db:generate, db:migrate:dev, db:migrate:deploy, db:studio
+
 ## [ORPHANS & PENDING]
 
-- [ ] Database connection (PostgreSQL) — blocked, no DB yet
-- [ ] Redis connection — blocked, no Redis yet
 - [ ] Real-time communication (SSE/WebSocket) — Phase 6 structure exists but no real-time
 - [ ] Admin authentication — pages are public (pre-auth)
 - [ ] Restaurant authentication — pages are public (pre-auth)
@@ -254,29 +323,30 @@ cd apps/web && npx next build  # Production build
 - [ ] Coolify deployment configuration — needs server
 - [ ] RTL comprehensive testing — structure exists, needs verification
 - [ ] Auth middleware in API Gateway — service-to-service auth
+- [ ] Redis usage in business logic — foundation only, not yet consuming
+- [ ] Redis session store — sessions currently in PostgreSQL
+- [ ] In-memory store.ts files — 3 orphaned files (auth, restaurant, order) — not imported, preserved as reference
 
 ## [RISKS]
 
-- **No database:** All services use in-memory stores; data lost on restart
 - **No real-time:** Kitchen queue is poll-based, no push notifications
 - **No service-to-service auth:** Gateway routes are open
 - **No HTTPS:** Development only
 - **Translation duplication:** web lib has duplicate translation data from service
+- **Vitest 4.x engines warning:** vitest 4.1.5 engine requires Node ^20/^22/>=24 but works on Node 23 (cosmetic warning only)
+- **Test isolation:** DB tests share a single Postgres instance; tests clean up test-specific data but cannot run fully in parallel
+- **Redis not used yet:** Client ready, but no business logic consumes it
 
 ## [NEXT STEPS]
 
-**Phase 9 — Documentation and Verification** (next)
+**Phase 11 — Auth Middleware / Service-to-Service Auth** (next)
 
-- Final formatter check
-- Final typecheck
-- Final build
-- Final test run
-- Health verification
-- Architecture documentation
+- Add auth middleware to API Gateway
+- Validate tokens before proxying to services
+- Service-level authorization headers
 
 **Post-MVP:**
 
-- PostgreSQL integration
 - Redis + WebSocket for real-time
 - Authentication on all pages
 - Payment gateway integration

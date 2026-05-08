@@ -10,7 +10,12 @@ export interface SessionRecord {
   createdAt: Date;
 }
 
-export async function createSession(userId: string, email: string, role: string, restaurantId: string | null): Promise<SessionRecord> {
+export async function createSession(
+  userId: string,
+  email: string,
+  role: string,
+  restaurantId: string | null,
+): Promise<SessionRecord> {
   const { v4: uuidv4 } = await import('uuid');
   const token = uuidv4();
 

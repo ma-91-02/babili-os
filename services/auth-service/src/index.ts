@@ -32,7 +32,14 @@ app.post('/api/v1/auth/register', async (req, res) => {
     res.status(400).json({ success: false, error: 'Email, password, and name are required' });
     return;
   }
-  const result = await authService.register({ email, password, name, role, restaurantId, language });
+  const result = await authService.register({
+    email,
+    password,
+    name,
+    role,
+    restaurantId,
+    language,
+  });
   res.status(result.status).json(result);
 });
 

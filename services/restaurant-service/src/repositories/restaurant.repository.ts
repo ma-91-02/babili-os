@@ -40,14 +40,17 @@ export async function listRestaurants(ownerId?: string) {
   return prisma.restaurant.findMany({ where, orderBy: { createdAt: 'desc' } });
 }
 
-export async function updateRestaurant(id: string, data: Partial<{
-  name: string;
-  language: string;
-  country: string;
-  timezone: string;
-  currencies: string[];
-  isActive: boolean;
-}>) {
+export async function updateRestaurant(
+  id: string,
+  data: Partial<{
+    name: string;
+    language: string;
+    country: string;
+    timezone: string;
+    currencies: string[];
+    isActive: boolean;
+  }>,
+) {
   return prisma.restaurant.update({ where: { id }, data });
 }
 
@@ -86,7 +89,10 @@ export async function listTables(restaurantId: string) {
   });
 }
 
-export async function updateTable(id: string, data: Partial<{ tableNumber: number; capacity: number; isActive: boolean }>) {
+export async function updateTable(
+  id: string,
+  data: Partial<{ tableNumber: number; capacity: number; isActive: boolean }>,
+) {
   return prisma.restaurantTable.update({ where: { id }, data });
 }
 
@@ -107,7 +113,10 @@ export async function listMenuSections(restaurantId: string) {
   });
 }
 
-export async function updateMenuSection(id: string, data: Partial<{ name: string; sortOrder: number; isActive: boolean }>) {
+export async function updateMenuSection(
+  id: string,
+  data: Partial<{ name: string; sortOrder: number; isActive: boolean }>,
+) {
   return prisma.menuSection.update({ where: { id }, data });
 }
 
@@ -145,14 +154,17 @@ export async function listMenuItems(restaurantId: string, sectionId?: string) {
   });
 }
 
-export async function updateMenuItem(id: string, data: Partial<{
-  name: string;
-  description: string;
-  price: number;
-  currency: string;
-  isAvailable: boolean;
-  sortOrder: number;
-}>) {
+export async function updateMenuItem(
+  id: string,
+  data: Partial<{
+    name: string;
+    description: string;
+    price: number;
+    currency: string;
+    isAvailable: boolean;
+    sortOrder: number;
+  }>,
+) {
   return prisma.menuItem.update({ where: { id }, data });
 }
 

@@ -5,15 +5,9 @@
     "rootDir": "src",
     "baseUrl": ".",
     "paths": {
-      "@babili/shared": [
-        "../../packages/shared/src"
-      ],
-      "@babili/database": [
-        "../../packages/database/src"
-      ]
+      "@babili/shared": ["../../packages/shared/src"],
+      "@babili/database": ["../../packages/database/src"]
     }
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }

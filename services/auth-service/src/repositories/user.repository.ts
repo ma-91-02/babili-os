@@ -53,7 +53,10 @@ export async function findUserById(id: string): Promise<UserRecord | null> {
   return prisma.user.findUnique({ where: { id } });
 }
 
-export async function updateUser(id: string, data: Partial<Pick<UserRecord, 'emailVerified' | 'name' | 'language' | 'role' | 'restaurantId'>>): Promise<UserRecord | null> {
+export async function updateUser(
+  id: string,
+  data: Partial<Pick<UserRecord, 'emailVerified' | 'name' | 'language' | 'role' | 'restaurantId'>>,
+): Promise<UserRecord | null> {
   return prisma.user.update({ where: { id }, data });
 }
 

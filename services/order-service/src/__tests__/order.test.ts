@@ -5,6 +5,7 @@ import * as repo from '../repositories/order.repository';
 const testPrefix = `test-order-${Date.now()}`;
 let restaurantId: string;
 let tableId: string;
+let menuItemId: string;
 let orderId: string;
 
 beforeAll(async () => {
@@ -17,28 +18,44 @@ beforeAll(async () => {
       slug: `${testPrefix}-rest`,
       ownerId: 'test-owner',
       tables: { create: { tableNumber: 99, capacity: 4, qrCode: `${testPrefix}-qr-99` } },
+      menuSections: { create: { name: 'Main', sortOrder: 1 } },
     },
-    include: { tables: true },
+    include: { tables: true, menuSections: true },
   });
 
   restaurantId = rest.id;
   tableId = rest.tables[0]!.id;
+
+  const item = await adminClient.menuItem.create({
+    data: {
+      restaurantId: rest.id,
+      sectionId: rest.menuSections[0]!.id,
+      name: 'Test Burger',
+      price: 8.5,
+      sortOrder: 1,
+    },
+  });
+
+  menuItemId = item.id;
   await adminClient.$disconnect();
 });
 
 afterAll(async () => {
+  await prisma.order.deleteMany({ where: { restaurant: { slug: { contains: testPrefix } } } });
   await prisma.restaurant.deleteMany({ where: { slug: { contains: testPrefix } } });
   await prisma.$disconnect();
 });
 
-describe('Order Repository (DB)', () => {
-  const sampleItem = { menuItemId: 'test-item-1', name: 'Test Burger', quantity: 2, price: 8.5 };
+function sampleItem() {
+  return { menuItemId, name: 'Test Burger', quantity: 2, price: 8.5 };
+}
 
+describe('Order Repository (DB)', () => {
   it('creates an order', async () => {
     const order = await repo.createOrder({
       restaurantId,
       tableId,
-      items: [sampleItem],
+      items: [sampleItem()],
     });
     expect(order.orderStatus).toBe('pending');
     expect(order.total).toBe(17);

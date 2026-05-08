@@ -22,7 +22,7 @@ export async function createOrder(data: {
       language: data.language || 'en',
       items: {
         create: data.items.map((item) => ({
-          menuItemId: item.menuItemId,
+          menuItem: { connect: { id: item.menuItemId } },
           name: item.name,
           quantity: item.quantity,
           price: item.price,

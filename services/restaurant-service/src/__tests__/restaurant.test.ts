@@ -27,7 +27,11 @@ describe('Restaurant Repository (DB)', () => {
 
   it('throws on duplicate slug', async () => {
     await expect(
-      repo.createRestaurant({ name: 'Duplicate', slug: `${testPrefix}-main`, ownerId: 'test-owner' }),
+      repo.createRestaurant({
+        name: 'Duplicate',
+        slug: `${testPrefix}-main`,
+        ownerId: 'test-owner',
+      }),
     ).rejects.toThrow('already exists');
   });
 

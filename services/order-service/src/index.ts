@@ -13,17 +13,32 @@ app.get('/health', async (_req, res) => {
     await prisma.$queryRaw`SELECT 1`;
     dbOk = true;
   } catch {}
-  res.json({ status: dbOk ? 'ok' : 'degraded', service: 'order-service', database: dbOk ? 'connected' : 'disconnected', timestamp: new Date().toISOString() });
+  res.json({
+    status: dbOk ? 'ok' : 'degraded',
+    service: 'order-service',
+    database: dbOk ? 'connected' : 'disconnected',
+    timestamp: new Date().toISOString(),
+  });
 });
 
 app.post('/api/v1/orders', async (req, res) => {
   try {
     const { restaurantId, tableId, customerId, waiterId, items, currency, language } = req.body;
     if (!restaurantId || !tableId || !items || items.length === 0) {
-      res.status(400).json({ success: false, error: 'RestaurantId, tableId, and items are required' });
+      res
+        .status(400)
+        .json({ success: false, error: 'RestaurantId, tableId, and items are required' });
       return;
     }
-    const order = await repo.createOrder({ restaurantId, tableId, customerId, waiterId, items, currency, language });
+    const order = await repo.createOrder({
+      restaurantId,
+      tableId,
+      customerId,
+      waiterId,
+      items,
+      currency,
+      language,
+    });
     res.status(201).json({ success: true, data: order });
   } catch (error) {
     res.status(500).json({ success: false, error: (error as Error).message });
@@ -32,7 +47,10 @@ app.post('/api/v1/orders', async (req, res) => {
 
 app.get('/api/v1/orders/:id', async (req, res) => {
   const order = await repo.findOrderById(req.params.id);
-  if (!order) { res.status(404).json({ success: false, error: 'Order not found' }); return; }
+  if (!order) {
+    res.status(404).json({ success: false, error: 'Order not found' });
+    return;
+  }
   res.json({ success: true, data: order });
 });
 
@@ -44,29 +62,44 @@ app.get('/api/v1/restaurants/:restaurantId/orders', async (req, res) => {
 
 app.put('/api/v1/orders/:id/status', async (req, res) => {
   const { status } = req.body;
-  if (!status) { res.status(400).json({ success: false, error: 'Status is required' }); return; }
+  if (!status) {
+    res.status(400).json({ success: false, error: 'Status is required' });
+    return;
+  }
   try {
     const order = await repo.updateOrderStatus(req.params.id, status);
     res.json({ success: true, data: order });
-  } catch { res.status(404).json({ success: false, error: 'Order not found' }); }
+  } catch {
+    res.status(404).json({ success: false, error: 'Order not found' });
+  }
 });
 
 app.put('/api/v1/orders/:id/kitchen', async (req, res) => {
   const { status } = req.body;
-  if (!status) { res.status(400).json({ success: false, error: 'Kitchen status is required' }); return; }
+  if (!status) {
+    res.status(400).json({ success: false, error: 'Kitchen status is required' });
+    return;
+  }
   try {
     const order = await repo.updateKitchenStatus(req.params.id, status);
     res.json({ success: true, data: order });
-  } catch { res.status(404).json({ success: false, error: 'Order not found' }); }
+  } catch {
+    res.status(404).json({ success: false, error: 'Order not found' });
+  }
 });
 
 app.put('/api/v1/orders/:id/cashier', async (req, res) => {
   const { status } = req.body;
-  if (!status) { res.status(400).json({ success: false, error: 'Cashier status is required' }); return; }
+  if (!status) {
+    res.status(400).json({ success: false, error: 'Cashier status is required' });
+    return;
+  }
   try {
     const order = await repo.updateCashierStatus(req.params.id, status);
     res.json({ success: true, data: order });
-  } catch { res.status(404).json({ success: false, error: 'Order not found' }); }
+  } catch {
+    res.status(404).json({ success: false, error: 'Order not found' });
+  }
 });
 
 app.get('/api/v1/kitchen/queue', async (_req, res) => {
