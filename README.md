@@ -67,6 +67,14 @@ npm run format
 npm run db:studio
 ```
 
+### One-Command Dev Start
+
+```bash
+npm run dev:start
+```
+
+Starts everything: Docker services, Prisma setup, microservices, and Next.js.
+
 ### Docker Development
 
 ```bash

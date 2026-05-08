@@ -26,7 +26,7 @@
 .logoIcon {
   width: 32px;
   height: 32px;
-  background: linear-gradient(135deg, $color-main, color.adjust(#614ae1, $lightness: -10%));
+  background: linear-gradient(135deg, $color-main, color.adjust($color-main, $lightness: -10%));
   border-radius: $border-radius-sm;
   display: block;
   position: relative;
@@ -52,6 +52,21 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.langSelect {
+  padding: 0.375rem 0.5rem;
+  border: 1px solid $color-secondary;
+  border-radius: $border-radius-sm;
+  font-size: 0.75rem;
+  background: $color-white;
+  color: $color-text-secondary;
+  cursor: pointer;
+  outline: none;
+
+  &:focus {
+    border-color: $color-main;
+  }
 }
 
 .hero {

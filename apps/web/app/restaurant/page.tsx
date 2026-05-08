@@ -2,6 +2,8 @@
 
 import { useAuth } from '@/components/auth/AuthProvider';
 import { AuthGuard } from '@/components/auth/AuthGuard';
+import { useLanguage } from '@/components/LanguageProvider';
+import { LanguageSelector } from '@/components/LanguageSelector';
 import { useOrderEvents } from '@/lib/sse';
 import { t, getBrandName } from '../../lib/i18n';
 import type { OrderEvent } from '@/lib/sse';
@@ -24,8 +26,8 @@ function EventItem({ event }: { event: OrderEvent }) {
 
 function RestaurantContent() {
   const { user, logout } = useAuth();
+  const { lang } = useLanguage();
   const { events, connected } = useOrderEvents(user?.restaurantId ?? undefined);
-  const lang = 'en';
 
   return (
     <div className={styles.restaurant}>
@@ -41,6 +43,9 @@ function RestaurantContent() {
           <span className={styles.navItem}>{t('nav.staff', lang)}</span>
           <span className={styles.navItem}>{t('nav.settings', lang)}</span>
         </nav>
+        <div className={styles.langPicker}>
+          <LanguageSelector />
+        </div>
         <div className={styles.sidebarFooter}>
           <span className={styles.userInfo}>{user?.email}</span>
           <button onClick={logout} className={styles.logoutBtn}>
@@ -62,9 +67,9 @@ function RestaurantContent() {
             <p>{t('common.loading', lang)}</p>
           </div>
           <div className={styles.eventFeed}>
-            <h3>Real-time Order Events</h3>
+            <h3>{t('nav.orders', lang)}</h3>
             {events.length === 0 ? (
-              <p className={styles.noEvents}>Waiting for orders...</p>
+              <p className={styles.noEvents}>{t('common.loading', lang)}</p>
             ) : (
               <div className={styles.eventList}>
                 {events.map((event, i) => (

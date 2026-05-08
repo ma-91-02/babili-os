@@ -2,12 +2,14 @@
 
 import { useAuth } from '@/components/auth/AuthProvider';
 import { AuthGuard } from '@/components/auth/AuthGuard';
+import { useLanguage } from '@/components/LanguageProvider';
+import { LanguageSelector } from '@/components/LanguageSelector';
 import { t, getBrandName } from '../../lib/i18n';
 import styles from './admin.module.scss';
 
 function AdminContent() {
   const { user, logout } = useAuth();
-  const lang = 'en';
+  const { lang } = useLanguage();
 
   return (
     <div className={styles.admin}>
@@ -19,6 +21,9 @@ function AdminContent() {
           <span className={styles.navItem}>{t('admin.users', lang)}</span>
           <span className={styles.navItem}>{t('nav.settings', lang)}</span>
         </nav>
+        <div className={styles.langPicker}>
+          <LanguageSelector />
+        </div>
         <div className={styles.sidebarFooter}>
           <span className={styles.userInfo}>{user?.email}</span>
           <button onClick={logout} className={styles.logoutBtn}>

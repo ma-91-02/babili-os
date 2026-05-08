@@ -4,11 +4,13 @@ import { Suspense, useState, type FormEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/components/auth/AuthProvider';
-import { SUPPORTED_LANGUAGES, type SupportedLanguage } from '@/lib/i18n';
+import { useLanguage } from '@/components/LanguageProvider';
+import { LanguageSelector } from '@/components/LanguageSelector';
+import { t } from '../../lib/i18n';
 import styles from './login.module.scss';
 
 function LoginForm() {
-  const [lang, setLang] = useState<SupportedLanguage>('en');
+  const { lang } = useLanguage();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [formError, setFormError] = useState('');
@@ -22,7 +24,7 @@ function LoginForm() {
     setFormError('');
 
     if (!email.trim() || !password.trim()) {
-      setFormError('Please fill in all fields');
+      setFormError(t('auth.required', lang));
       return;
     }
 
@@ -32,7 +34,7 @@ function LoginForm() {
       const redirectTo = searchParams.get('redirect') || '/restaurant';
       router.push(redirectTo);
     } catch {
-      setFormError(error || 'Invalid email or password');
+      setFormError(error || t('auth.invalidCredentials', lang));
     } finally {
       setSubmitting(false);
     }
@@ -46,14 +48,14 @@ function LoginForm() {
             <span className={styles.logoIcon} />
             <span className={styles.logoText}>Babili</span>
           </div>
-          <h1 className={styles.title}>Sign In</h1>
-          <p className={styles.subtitle}>Welcome back</p>
+          <h1 className={styles.title}>{t('auth.login', lang)}</h1>
+          <p className={styles.subtitle}>{t('auth.welcomeBack', lang)}</p>
         </div>
 
         <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.field}>
             <label htmlFor="email" className={styles.label}>
-              Email
+              {t('auth.email', lang)}
             </label>
             <input
               id="email"
@@ -69,7 +71,7 @@ function LoginForm() {
 
           <div className={styles.field}>
             <label htmlFor="password" className={styles.label}>
-              Password
+              {t('auth.password', lang)}
             </label>
             <input
               id="password"
@@ -94,28 +96,19 @@ function LoginForm() {
             className={`btn btn-primary ${styles.submit}`}
             disabled={submitting}
           >
-            {submitting ? '...' : 'Sign In'}
+            {submitting ? t('common.loading', lang) : t('auth.login', lang)}
           </button>
         </form>
 
         <div className={styles.footer}>
           <p className={styles.switch}>
-            Don&apos;t have an account? <Link href="/register">Sign Up</Link>
+            {t('auth.noAccount', lang)}{' '}
+            <Link href="/register">{t('auth.signUp', lang)}</Link>
           </p>
         </div>
 
         <div className={styles.langPicker}>
-          <select
-            value={lang}
-            onChange={(e) => setLang(e.target.value as SupportedLanguage)}
-            className={styles.langSelect}
-          >
-            {SUPPORTED_LANGUAGES.map((l: string) => (
-              <option key={l} value={l}>
-                {l.toUpperCase()}
-              </option>
-            ))}
-          </select>
+          <LanguageSelector className={styles.langSelect} />
         </div>
       </div>
     </div>

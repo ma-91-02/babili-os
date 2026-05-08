@@ -4,11 +4,13 @@ import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/components/auth/AuthProvider';
-import { SUPPORTED_LANGUAGES, type SupportedLanguage } from '@/lib/i18n';
+import { useLanguage } from '@/components/LanguageProvider';
+import { LanguageSelector } from '@/components/LanguageSelector';
+import { t } from '../../lib/i18n';
 import styles from './register.module.scss';
 
 export default function RegisterPage() {
-  const [lang, setLang] = useState<SupportedLanguage>('en');
+  const { lang } = useLanguage();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,7 +24,7 @@ export default function RegisterPage() {
     setFormError('');
 
     if (!name.trim() || !email.trim() || !password.trim()) {
-      setFormError('Please fill in all fields');
+      setFormError(t('auth.required', lang));
       return;
     }
 
@@ -31,7 +33,7 @@ export default function RegisterPage() {
       await register({ name, email, password });
       router.push('/login');
     } catch {
-      setFormError(error || 'Registration failed');
+      setFormError(error || t('auth.invalidCredentials', lang));
     } finally {
       setSubmitting(false);
     }
@@ -45,14 +47,14 @@ export default function RegisterPage() {
             <span className={styles.logoIcon} />
             <span className={styles.logoText}>Babili</span>
           </div>
-          <h1 className={styles.title}>Create Account</h1>
-          <p className={styles.subtitle}>Sign up</p>
+          <h1 className={styles.title}>{t('auth.createAccount', lang)}</h1>
+          <p className={styles.subtitle}>{t('auth.signUp', lang)}</p>
         </div>
 
         <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.field}>
             <label htmlFor="name" className={styles.label}>
-              Name
+              {t('auth.name', lang)}
             </label>
             <input
               id="name"
@@ -60,7 +62,7 @@ export default function RegisterPage() {
               className={styles.input}
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Your Name"
+              placeholder={t('auth.name', lang)}
               autoComplete="name"
               disabled={submitting}
             />
@@ -68,7 +70,7 @@ export default function RegisterPage() {
 
           <div className={styles.field}>
             <label htmlFor="email" className={styles.label}>
-              Email
+              {t('auth.email', lang)}
             </label>
             <input
               id="email"
@@ -84,7 +86,7 @@ export default function RegisterPage() {
 
           <div className={styles.field}>
             <label htmlFor="password" className={styles.label}>
-              Password
+              {t('auth.password', lang)}
             </label>
             <input
               id="password"
@@ -109,28 +111,19 @@ export default function RegisterPage() {
             className={`btn btn-primary ${styles.submit}`}
             disabled={submitting}
           >
-            {submitting ? '...' : 'Create Account'}
+            {submitting ? t('common.loading', lang) : t('auth.createAccount', lang)}
           </button>
         </form>
 
         <div className={styles.footer}>
           <p className={styles.switch}>
-            Already have an account? <Link href="/login">Sign In</Link>
+            {t('auth.hasAccount', lang)}{' '}
+            <Link href="/login">{t('auth.signIn', lang)}</Link>
           </p>
         </div>
 
         <div className={styles.langPicker}>
-          <select
-            value={lang}
-            onChange={(e) => setLang(e.target.value as SupportedLanguage)}
-            className={styles.langSelect}
-          >
-            {SUPPORTED_LANGUAGES.map((l) => (
-              <option key={l} value={l}>
-                {l.toUpperCase()}
-              </option>
-            ))}
-          </select>
+          <LanguageSelector className={styles.langSelect} />
         </div>
       </div>
     </div>

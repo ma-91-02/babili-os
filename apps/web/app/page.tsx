@@ -1,7 +1,13 @@
+'use client';
+
 import Link from 'next/link';
+import { useLanguage } from '@/components/LanguageProvider';
+import { LanguageSelector } from '@/components/LanguageSelector';
 import styles from './page.module.scss';
 
 export default function HomePage() {
+  const { lang } = useLanguage();
+
   return (
     <div className={styles.landing}>
       <header className={styles.header}>
@@ -22,6 +28,7 @@ export default function HomePage() {
           <Link href="/customer" className="btn btn-primary">
             Customer
           </Link>
+          <LanguageSelector className={styles.langSelect} />
         </nav>
       </header>
 

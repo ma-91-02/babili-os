@@ -18,6 +18,7 @@
     "test:watch": "vitest",
     "format": "prettier --write \"**/*.{ts,tsx,json,scss,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,json,scss,md}\"",
+    "dev:start": "node scripts/dev-start.mjs",
     "health": "node scripts/health.mjs",
     "clean": "rm -rf apps/*/.next apps/*/node_modules node_modules packages/*/node_modules services/*/node_modules",
     "db:generate": "npm run generate --workspace=@babili/database",

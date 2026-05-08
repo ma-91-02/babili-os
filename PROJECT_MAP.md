@@ -89,6 +89,12 @@ Defined in packages/shared/src/types.ts and permissions.ts
   - POST /api/v1/coverage/assert
 - **Coverage Validator:** validates all keys have all 25 languages
 - **Web App Translation:** apps/web/lib/i18n.ts — `t(key, lang)` function
+- **Language Provider:** apps/web/components/LanguageProvider.tsx — React context for dynamic language switching
+- **Language Selector:** apps/web/components/LanguageSelector.tsx — reusable dropdown using LANGUAGE_NAMES
+- **Query Param Switching:** `?lang=ar` on any URL changes language (read by LanguageProvider via useSearchParams)
+- **Persistence:** Language saved to localStorage (`babili_lang` key), restored on page load
+- **Dynamic RTL:** LanguageProvider sets `document.documentElement.dir` based on language
+- **Middleware:** Preserves `?lang=` query param through auth redirects
 - **Translation Categories:** common, auth, nav, admin, customer, order, error
 - **Coverage:** 100% — all keys have all 25 languages
 
@@ -101,7 +107,12 @@ Defined in packages/shared/src/types.ts and permissions.ts
 
 **Design Tokens:** apps/web/styles/\_tokens.scss
 **Global Styles:** apps/web/styles/globals.scss
-**RTL Support:** dir="rtl" attribute, Arabic font family defined
+**RTL Support:** dir="rtl" attribute, Arabic font family defined, dynamic via LanguageProvider
+
+**Compliance:**
+- All SCSS files use `@use tokens` variables — no hardcoded brand colors in components
+- login/register SCSS migrated from hardcoded hex to token variables
+- Semantic colors (success, warning, error) used only where appropriate
 
 ## [DOMAIN ROUTING]
 
@@ -142,6 +153,16 @@ Not yet configured. Docker Compose files ready.
 
 ## [LOCAL DEVELOPMENT]
 
+### One-Command Start
+
+```bash
+npm run dev:start
+```
+
+Starts everything: Docker, Prisma, seed, all microservices, Next.js.
+
+### Manual Steps
+
 ```bash
 # Install dependencies
 npm install
@@ -162,7 +183,7 @@ npm run db:generate
 npm run dev                 # Next.js on :3000
 
 # Run tests
-npm test                    # All 105 tests pass
+npm test                    # All 154 tests pass
 
 # Type check
 npm run typecheck
@@ -186,15 +207,17 @@ npm run db:studio
 
 ## [CURRENT MILESTONE]
 
-**Phase 10.3 — Stabilize Local Development Runtime and Fix Remaining Verification Issues** ✅ Complete
+**Phase 10.4 — Fix Design Tokens, Translation Switching, RTL, and Dev Startup Script** ✅ Complete
 
-- http://localhost:3000/ returns 200 and renders the Babili landing page correctly
-- predev script kills stale :3000 processes before starting dev server
-- npm run health script checks all 6 services
-- docs/running.md with complete local dev workflow and troubleshooting
+- All pages use dynamic language from LanguageProvider context
+- Language switching via `?lang=` query param and LanguageSelector dropdown
+- Language persisted in localStorage
+- RTL auto-switching for ar, ur, fa, he via LanguageProvider
+- Login/register/landing/SCSS migrated from hardcoded colors to design tokens
+- scripts/dev-start.mjs now starts Docker, Prisma, seed, microservices, and Next.js
+- npm run dev:start added to root package.json
 - All 154 tests pass, format clean, build succeeds
-- TypeScript errors fixed: added missing `@/*` path alias to root tsconfig.json (22 TS2307/TS7006 errors resolved)
-- `npm run typecheck` passes with 0 errors
+- TypeScript typecheck passes with 0 errors
 
 ## [COMPLETED]
 
@@ -379,6 +402,22 @@ npm run db:studio
 - [x] All 154 tests pass — no regressions
 - [x] Prettier format — all files clean
 
+### Phase 10.4 — Fix Design Tokens, Translation Switching, RTL, and Dev Startup Script
+
+- [x] LanguageProvider context with dynamic language switching (apps/web/components/LanguageProvider.tsx)
+- [x] LanguageSelector reusable component (apps/web/components/LanguageSelector.tsx)
+- [x] `?lang=` query param handling via useSearchParams
+- [x] Language persistence in localStorage
+- [x] Dynamic RTL: LanguageProvider sets html.dir based on language
+- [x] All pages use useLanguage() hook instead of hardcoded 'en'
+- [x] Login/register pages use t() for all visible text
+- [x] Middleware preserves ?lang= through auth redirects
+- [x] Login/register SCSS migrated to design tokens (no hardcoded brand colors)
+- [x] AuthGuard hardcoded colors removed
+- [x] scripts/dev-start.mjs: Docker services, Prisma, seed, microservices, health check
+- [x] npm run dev:start added to root package.json
+- [x] Updated README.md, docs/running.md, PROJECT_MAP.md with dev:start and language switching docs
+
 ### Phase 10.3 — Stabilize Local Development Runtime and Fix Remaining Verification Issues
 
 - [x] Diagnosed root cause: stale Next.js dev server process on port 3000 serving broken page
@@ -407,7 +446,7 @@ npm run db:studio
 - [ ] Public restaurant page — post-MVP
 - [ ] Domain routing configuration — needs DNS
 - [ ] Coolify deployment configuration — needs server
-- [ ] RTL comprehensive testing — structure exists, needs verification
+- [x] RTL comprehensive testing — LanguageProvider handles dynamic dir switching
 - [ ] Redis usage in business logic — foundation only, not yet consuming
 - [ ] Redis session store — sessions currently in PostgreSQL
 - [ ] Middleware checks cookie existence only (not session validity) — actual verification on client side

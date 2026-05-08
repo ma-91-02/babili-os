@@ -1,5 +1,7 @@
 import Link from 'next/link';
-import { t, getBrandName, SUPPORTED_LANGUAGES, type SupportedLanguage } from '../../../lib/i18n';
+import { t, getBrandName } from '../../../lib/i18n';
+import { type SupportedLanguage } from '@babili/shared';
+import { CustomerLangSelector } from './LangSelector';
 import styles from './restaurantSlug.module.scss';
 
 export default async function RestaurantSlugPage(props: {
@@ -14,13 +16,7 @@ export default async function RestaurantSlugPage(props: {
       <header className={styles.header}>
         <div className={styles.logo}>{getBrandName(lang)}</div>
         <div className={styles.langSwitch}>
-          <select defaultValue={lang}>
-            {SUPPORTED_LANGUAGES.map((l) => (
-              <option key={l} value={l}>
-                {l.toUpperCase()}
-              </option>
-            ))}
-          </select>
+          <CustomerLangSelector />
         </div>
       </header>
 

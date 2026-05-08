@@ -1,22 +1,20 @@
+'use client';
+
 import Link from 'next/link';
-import { t, getBrandName, SUPPORTED_LANGUAGES, type SupportedLanguage } from '../../lib/i18n';
+import { useLanguage } from '@/components/LanguageProvider';
+import { LanguageSelector } from '@/components/LanguageSelector';
+import { t, getBrandName } from '../../lib/i18n';
 import styles from './customer.module.scss';
 
 export default function CustomerPage() {
-  const lang: SupportedLanguage = 'en';
+  const { lang } = useLanguage();
 
   return (
     <div className={styles.customer}>
       <header className={styles.header}>
         <div className={styles.logo}>{getBrandName(lang)}</div>
         <div className={styles.langSwitch}>
-          <select defaultValue={lang}>
-            {SUPPORTED_LANGUAGES.map((l) => (
-              <option key={l} value={l}>
-                {l.toUpperCase()}
-              </option>
-            ))}
-          </select>
+          <LanguageSelector className={styles.langSelect} />
         </div>
       </header>
 
