@@ -9,6 +9,12 @@ import { useOrderEvents } from '@/lib/sse';
 import { t, getBrandName } from '../../lib/i18n';
 import type { SupportedLanguage } from '@babili/shared';
 import type { OrderEvent } from '@/lib/sse';
+import {
+  MOCK_MENU_SECTIONS,
+  MOCK_STAFF,
+  MOCK_TABLES,
+  getMockOverviewStats,
+} from '@/lib/mock/restaurant-data';
 import styles from './restaurant.module.scss';
 
 type Tab =
@@ -31,8 +37,8 @@ const tabs: { key: Tab; labelKey: string }[] = [
   { key: 'cashier', labelKey: 'nav.cashier' },
   { key: 'tables', labelKey: 'nav.tables' },
   { key: 'staff', labelKey: 'nav.staff' },
-  { key: 'ingredients', labelKey: 'nav.staff' },
-  { key: 'promotions', labelKey: 'nav.dashboard' },
+  { key: 'ingredients', labelKey: 'restaurant.ingredients' },
+  { key: 'promotions', labelKey: 'restaurant.promotions' },
   { key: 'settings', labelKey: 'nav.settings' },
 ];
 
@@ -52,27 +58,28 @@ function EventItem({ event }: { event: OrderEvent }) {
 }
 
 function OverviewTab({ lang }: { lang: SupportedLanguage }) {
+  const stats = getMockOverviewStats();
   return (
     <div className={styles.grid}>
       <div className="card">
         <h3>{t('nav.orders', lang)}</h3>
-        <p className={styles.stat}>12</p>
-        <p className={styles.statLabel}>{t('common.loading', lang)}</p>
+        <p className={styles.stat}>{stats.orders}</p>
+        <p className={styles.statLabel}>{t('restaurant.activeOrders', lang)}</p>
       </div>
       <div className="card">
         <h3>{t('nav.tables', lang)}</h3>
-        <p className={styles.stat}>5</p>
-        <p className={styles.statLabel}>{t('nav.dashboard', lang)}</p>
+        <p className={styles.stat}>{stats.tables}</p>
+        <p className={styles.statLabel}>{t('restaurant.available', lang)}</p>
       </div>
       <div className="card">
         <h3>{t('nav.staff', lang)}</h3>
-        <p className={styles.stat}>4</p>
-        <p className={styles.statLabel}>{t('nav.menu', lang)}</p>
+        <p className={styles.stat}>{stats.staff}</p>
+        <p className={styles.statLabel}>{t('nav.staff', lang)}</p>
       </div>
       <div className="card">
         <h3>{t('nav.menu', lang)}</h3>
-        <p className={styles.stat}>14</p>
-        <p className={styles.statLabel}>{t('common.loading', lang)}</p>
+        <p className={styles.stat}>{stats.menuItems}</p>
+        <p className={styles.statLabel}>{t('restaurant.menuItems', lang)}</p>
       </div>
     </div>
   );
@@ -83,25 +90,16 @@ function MenuTab({ lang }: { lang: SupportedLanguage }) {
     <div>
       <div className={styles.sectionHeader}>
         <h3>{t('nav.menu', lang)}</h3>
-        <button className="btn btn-primary btn-sm">{t('common.save', lang)}</button>
       </div>
       <div className={styles.menuGrid}>
-        <div className="card">
-          <h4>Appetizers</h4>
-          <p>3 {t('nav.menu', lang)}</p>
-        </div>
-        <div className="card">
-          <h4>Main Course</h4>
-          <p>4 {t('nav.menu', lang)}</p>
-        </div>
-        <div className="card">
-          <h4>Desserts</h4>
-          <p>3 {t('nav.menu', lang)}</p>
-        </div>
-        <div className="card">
-          <h4>Beverages</h4>
-          <p>4 {t('nav.menu', lang)}</p>
-        </div>
+        {MOCK_MENU_SECTIONS.map((section) => (
+          <div key={section.id} className="card">
+            <h4>{section.name}</h4>
+            <p>
+              {section.itemCount} {t('restaurant.menuItems', lang)}
+            </p>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -115,7 +113,7 @@ function OrdersTab({ lang, events }: { lang: SupportedLanguage; events: OrderEve
       </div>
       {events.length === 0 ? (
         <div className="card">
-          <p>{t('common.loading', lang)}</p>
+          <p>{t('restaurant.noOrders', lang)}</p>
         </div>
       ) : (
         <div className={styles.eventList}>
@@ -136,14 +134,14 @@ function KitchenTab({ lang }: { lang: SupportedLanguage }) {
       </div>
       <div className={styles.grid}>
         <div className="card">
-          <h4>{t('nav.orders', lang)}</h4>
+          <h4>{t('restaurant.activeOrders', lang)}</h4>
           <p className={styles.stat}>0</p>
-          <p className={styles.statLabel}>{t('common.loading', lang)}</p>
+          <p className={styles.statLabel}>{t('restaurant.noOrders', lang)}</p>
         </div>
         <div className="card">
-          <h4>{t('nav.orders', lang)}</h4>
+          <h4>{t('restaurant.readyOrders', lang)}</h4>
           <p className={styles.stat}>0</p>
-          <p className={styles.statLabel}>{t('nav.kitchen', lang)}</p>
+          <p className={styles.statLabel}>{t('restaurant.readyOrders', lang)}</p>
         </div>
       </div>
     </div>
@@ -160,7 +158,7 @@ function CashierTab({ lang }: { lang: SupportedLanguage }) {
         <div className="card">
           <h4>{t('nav.orders', lang)}</h4>
           <p className={styles.stat}>0</p>
-          <p className={styles.statLabel}>{t('nav.cashier', lang)}</p>
+          <p className={styles.statLabel}>{t('restaurant.unpaid', lang)}</p>
         </div>
       </div>
     </div>
@@ -172,15 +170,18 @@ function TablesTab({ lang }: { lang: SupportedLanguage }) {
     <div>
       <div className={styles.sectionHeader}>
         <h3>{t('nav.tables', lang)}</h3>
-        <button className="btn btn-primary btn-sm">{t('common.save', lang)}</button>
       </div>
       <div className={styles.tableGrid}>
-        {[1, 2, 3, 4, 5].map((num) => (
-          <div key={num} className="card">
+        {MOCK_TABLES.map((table) => (
+          <div key={table.id} className="card">
             <h4>
-              {t('nav.tables', lang)} {num}
+              {t('nav.tables', lang)} {table.number}
             </h4>
-            <p className={styles.statLabel}>{t('nav.dashboard', lang)}</p>
+            <p className={styles.statLabel}>
+              {table.status === 'available'
+                ? t('restaurant.available', lang)
+                : t('restaurant.occupied', lang)}
+            </p>
           </div>
         ))}
       </div>
@@ -193,7 +194,6 @@ function StaffTab({ lang }: { lang: SupportedLanguage }) {
     <div>
       <div className={styles.sectionHeader}>
         <h3>{t('nav.staff', lang)}</h3>
-        <button className="btn btn-primary btn-sm">{t('common.save', lang)}</button>
       </div>
       <div className={styles.tableCard}>
         <table className={styles.table}>
@@ -205,31 +205,13 @@ function StaffTab({ lang }: { lang: SupportedLanguage }) {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Restaurant Owner</td>
-              <td>owner@babili.dev</td>
-              <td>restaurant_owner</td>
-            </tr>
-            <tr>
-              <td>Sarah Manager</td>
-              <td>manager@babili.dev</td>
-              <td>manager</td>
-            </tr>
-            <tr>
-              <td>Ahmed Waiter</td>
-              <td>waiter@babili.dev</td>
-              <td>waiter</td>
-            </tr>
-            <tr>
-              <td>Chef Karim</td>
-              <td>kitchen@babili.dev</td>
-              <td>kitchen</td>
-            </tr>
-            <tr>
-              <td>Layla Cashier</td>
-              <td>cashier@babili.dev</td>
-              <td>cashier</td>
-            </tr>
+            {MOCK_STAFF.map((member, i) => (
+              <tr key={i}>
+                <td>{member.name}</td>
+                <td>{member.email}</td>
+                <td>{member.role}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
@@ -238,10 +220,11 @@ function StaffTab({ lang }: { lang: SupportedLanguage }) {
 }
 
 function PlaceholderTab({ title }: { title: string }) {
+  const { lang } = useLanguage();
   return (
     <div className="card">
       <h3>{title}</h3>
-      <p>{t('common.loading', title === 'common.loading' ? 'en' : 'en')}</p>
+      <p>{t('common.loading', lang)}</p>
     </div>
   );
 }
@@ -269,9 +252,9 @@ function RestaurantContent() {
       case 'staff':
         return <StaffTab lang={lang} />;
       case 'ingredients':
-        return <PlaceholderTab title={t('nav.menu', lang)} />;
+        return <PlaceholderTab title={t('restaurant.ingredients', lang)} />;
       case 'promotions':
-        return <PlaceholderTab title={t('nav.dashboard', lang)} />;
+        return <PlaceholderTab title={t('restaurant.promotions', lang)} />;
       case 'settings':
         return <PlaceholderTab title={t('nav.settings', lang)} />;
     }
@@ -307,7 +290,7 @@ function RestaurantContent() {
           <h1>{t('nav.dashboard', lang)}</h1>
           <div className={styles.connectionStatus}>
             <span className={connected ? styles.connected : styles.disconnected} />
-            {connected ? 'Live' : 'Reconnecting...'}
+            {connected ? t('restaurant.live', lang) : t('restaurant.reconnecting', lang)}
           </div>
         </header>
         <div className={styles.content}>{renderTab()}</div>

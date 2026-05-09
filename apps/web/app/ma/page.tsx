@@ -7,6 +7,14 @@ import { useLanguage } from '@/components/LanguageProvider';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { t, getBrandName } from '../../lib/i18n';
 import type { SupportedLanguage } from '@babili/shared';
+import {
+  MOCK_RESTAURANTS,
+  MOCK_USERS,
+  MOCK_PLANS,
+  MOCK_COUNTRIES,
+  MOCK_TRANSLATION_CATEGORIES,
+  getMockOverviewStats,
+} from '@/lib/mock/ma-data';
 import styles from './ma.module.scss';
 
 type Tab =
@@ -31,27 +39,28 @@ const tabs: { key: Tab; labelKey: string }[] = [
 ];
 
 function OverviewTab({ lang }: { lang: SupportedLanguage }) {
+  const stats = getMockOverviewStats(lang);
   return (
     <div className={styles.grid}>
       <div className="card">
         <h3>{t('admin.restaurants', lang)}</h3>
-        <p className={styles.stat}>1</p>
-        <p className={styles.statLabel}>{t('common.loading', lang)}</p>
+        <p className={styles.stat}>{stats.restaurants}</p>
+        <p className={styles.statLabel}>{t('nav.dashboard', lang)}</p>
       </div>
       <div className="card">
         <h3>{t('admin.users', lang)}</h3>
-        <p className={styles.stat}>6</p>
-        <p className={styles.statLabel}>{t('common.loading', lang)}</p>
+        <p className={styles.stat}>{stats.users}</p>
+        <p className={styles.statLabel}>{t('nav.staff', lang)}</p>
       </div>
       <div className="card">
         <h3>{t('admin.plans', lang)}</h3>
-        <p className={styles.stat}>3</p>
-        <p className={styles.statLabel}>{t('common.loading', lang)}</p>
+        <p className={styles.stat}>{stats.plans}</p>
+        <p className={styles.statLabel}>{t('common.search', lang)}</p>
       </div>
       <div className="card">
         <h3>{t('admin.countries', lang)}</h3>
-        <p className={styles.stat}>1</p>
-        <p className={styles.statLabel}>{t('common.loading', lang)}</p>
+        <p className={styles.stat}>{stats.countries}</p>
+        <p className={styles.statLabel}>{t('admin.countries', lang)}</p>
       </div>
     </div>
   );
@@ -62,26 +71,29 @@ function RestaurantsTab({ lang }: { lang: SupportedLanguage }) {
     <div className={styles.tableCard}>
       <div className={styles.tableHeader}>
         <h3>{t('admin.restaurants', lang)}</h3>
-        <button className="btn btn-primary btn-sm">{t('common.save', lang)}</button>
       </div>
       <table className={styles.table}>
         <thead>
           <tr>
-            <th>{t('common.search', lang)}</th>
-            <th>{t('nav.settings', lang)}</th>
+            <th>{t('auth.name', lang)}</th>
             <th>{t('nav.staff', lang)}</th>
             <th>{t('nav.dashboard', lang)}</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Babylon Bistro</td>
-            <td>{t('common.loading', lang)}</td>
-            <td>4</td>
-            <td>
-              <span className="badge badge-success">{t('common.confirm', lang)}</span>
-            </td>
-          </tr>
+          {MOCK_RESTAURANTS.map((r) => (
+            <tr key={r.id}>
+              <td>{r.name}</td>
+              <td>{r.staffCount}</td>
+              <td>
+                <span
+                  className={`badge ${r.status === 'active' ? 'badge-success' : 'badge-warning'}`}
+                >
+                  {r.status}
+                </span>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
@@ -93,7 +105,6 @@ function UsersTab({ lang }: { lang: SupportedLanguage }) {
     <div className={styles.tableCard}>
       <div className={styles.tableHeader}>
         <h3>{t('admin.users', lang)}</h3>
-        <button className="btn btn-primary btn-sm">{t('common.save', lang)}</button>
       </div>
       <table className={styles.table}>
         <thead>
@@ -104,60 +115,29 @@ function UsersTab({ lang }: { lang: SupportedLanguage }) {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>admin@babili.dev</td>
-            <td>Platform Admin</td>
-            <td>platform_admin</td>
-          </tr>
-          <tr>
-            <td>owner@babili.dev</td>
-            <td>Restaurant Owner</td>
-            <td>restaurant_owner</td>
-          </tr>
-          <tr>
-            <td>manager@babili.dev</td>
-            <td>Sarah Manager</td>
-            <td>manager</td>
-          </tr>
-          <tr>
-            <td>waiter@babili.dev</td>
-            <td>Ahmed Waiter</td>
-            <td>waiter</td>
-          </tr>
-          <tr>
-            <td>kitchen@babili.dev</td>
-            <td>Chef Karim</td>
-            <td>kitchen</td>
-          </tr>
-          <tr>
-            <td>cashier@babili.dev</td>
-            <td>Layla Cashier</td>
-            <td>cashier</td>
-          </tr>
+          {MOCK_USERS.map((u) => (
+            <tr key={u.id}>
+              <td>{u.email}</td>
+              <td>{u.name}</td>
+              <td>{u.role}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
   );
 }
 
-function PlansTab({ lang }: { lang: SupportedLanguage }) {
+function PlansTab({ lang: _lang }: { lang: SupportedLanguage }) {
   return (
     <div className={styles.grid}>
-      <div className="card">
-        <h3>{t('admin.plans', lang)}</h3>
-        <p className={styles.planName}>Starter</p>
-        <p className={styles.statLabel}>{t('common.loading', lang)}</p>
-      </div>
-      <div className="card">
-        <h3>{t('admin.plans', lang)}</h3>
-        <p className={styles.planName}>Professional</p>
-        <p className={styles.statLabel}>{t('common.loading', lang)}</p>
-      </div>
-      <div className="card">
-        <h3>{t('admin.plans', lang)}</h3>
-        <p className={styles.planName}>Enterprise</p>
-        <p className={styles.statLabel}>{t('common.loading', lang)}</p>
-      </div>
+      {MOCK_PLANS.map((plan) => (
+        <div key={plan.name} className="card">
+          <h3>{plan.name}</h3>
+          <p className={styles.planName}>${plan.price}/mo</p>
+          <p className={styles.statLabel}>{plan.description}</p>
+        </div>
+      ))}
     </div>
   );
 }
@@ -167,7 +147,6 @@ function CountriesTab({ lang }: { lang: SupportedLanguage }) {
     <div className={styles.tableCard}>
       <div className={styles.tableHeader}>
         <h3>{t('admin.countries', lang)}</h3>
-        <button className="btn btn-primary btn-sm">{t('common.save', lang)}</button>
       </div>
       <table className={styles.table}>
         <thead>
@@ -178,21 +157,13 @@ function CountriesTab({ lang }: { lang: SupportedLanguage }) {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>EG</td>
-            <td>Egypt</td>
-            <td>EGP</td>
-          </tr>
-          <tr>
-            <td>AE</td>
-            <td>UAE</td>
-            <td>AED</td>
-          </tr>
-          <tr>
-            <td>SA</td>
-            <td>Saudi Arabia</td>
-            <td>SAR</td>
-          </tr>
+          {MOCK_COUNTRIES.map((c) => (
+            <tr key={c.code}>
+              <td>{c.code}</td>
+              <td>{c.name}</td>
+              <td>{c.currency}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
@@ -204,7 +175,6 @@ function TranslationsTab({ lang }: { lang: SupportedLanguage }) {
     <div className={styles.tableCard}>
       <div className={styles.tableHeader}>
         <h3>{t('admin.translations', lang)}</h3>
-        <span className="badge badge-success">100%</span>
       </div>
       <table className={styles.table}>
         <thead>
@@ -214,36 +184,20 @@ function TranslationsTab({ lang }: { lang: SupportedLanguage }) {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>common (7 keys)</td>
-            <td>
-              <span className="badge badge-success">100%</span>
-            </td>
-          </tr>
-          <tr>
-            <td>nav (9 keys)</td>
-            <td>
-              <span className="badge badge-success">100%</span>
-            </td>
-          </tr>
-          <tr>
-            <td>auth (12 keys)</td>
-            <td>
-              <span className="badge badge-success">100%</span>
-            </td>
-          </tr>
-          <tr>
-            <td>admin (5 keys)</td>
-            <td>
-              <span className="badge badge-success">100%</span>
-            </td>
-          </tr>
-          <tr>
-            <td>landing (6 keys)</td>
-            <td>
-              <span className="badge badge-success">100%</span>
-            </td>
-          </tr>
+          {MOCK_TRANSLATION_CATEGORIES.map((cat) => (
+            <tr key={cat.name}>
+              <td>
+                {cat.name} ({cat.keyCount} keys)
+              </td>
+              <td>
+                <span
+                  className={`badge ${cat.coverage === 100 ? 'badge-success' : 'badge-warning'}`}
+                >
+                  {cat.coverage}%
+                </span>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
@@ -265,16 +219,20 @@ interface HealthData {
 function HealthTab({ lang }: { lang: SupportedLanguage }) {
   const [health, setHealth] = useState<HealthData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setLoading(true);
+    setError(null);
     fetch('/api/health')
       .then((r) => r.json())
       .then((d) => {
         if (d.success) setHealth(d.data);
         else setHealth(null);
       })
-      .catch(() => setHealth(null))
+      .catch(() => {
+        setError(t('admin.health', lang));
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -286,13 +244,7 @@ function HealthTab({ lang }: { lang: SupportedLanguage }) {
     );
   }
 
-  const services = health?.services ?? [
-    { service: 'api-gateway', status: 'down', data: null },
-    { service: 'auth-service', status: 'down', data: null },
-    { service: 'restaurant-service', status: 'down', data: null },
-    { service: 'order-service', status: 'down', data: null },
-    { service: 'translation-service', status: 'down', data: null },
-  ];
+  const services = health?.services ?? [];
 
   return (
     <div>
@@ -313,15 +265,24 @@ function HealthTab({ lang }: { lang: SupportedLanguage }) {
             <p className={styles.statLabel}>{svc.status}</p>
           </div>
         ))}
-        <div className="card">
-          <h3>{t('admin.health', lang)}</h3>
-          <p
-            className={`${styles.stat} ${health?.overall === 'healthy' ? styles.statOk : styles.statError}`}
-          >
-            {health?.overall === 'healthy' ? '✓' : '✗'}
-          </p>
-          <p className={styles.statLabel}>{health?.overall ?? 'unknown'}</p>
-        </div>
+        {services.length === 0 && (
+          <div className="card">
+            <h3>{t('admin.health', lang)}</h3>
+            <p className={`${styles.stat} ${styles.statError}`}>✗</p>
+            <p className={styles.statLabel}>{error || t('common.loading', lang)}</p>
+          </div>
+        )}
+        {services.length > 0 && (
+          <div className="card">
+            <h3>{t('admin.health', lang)}</h3>
+            <p
+              className={`${styles.stat} ${health?.overall === 'healthy' ? styles.statOk : styles.statError}`}
+            >
+              {health?.overall === 'healthy' ? '✓' : '✗'}
+            </p>
+            <p className={styles.statLabel}>{health?.overall ?? 'unknown'}</p>
+          </div>
+        )}
       </div>
     </div>
   );

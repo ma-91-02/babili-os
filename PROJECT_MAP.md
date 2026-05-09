@@ -225,6 +225,23 @@ npm run db:studio
 - All pages use design tokens, LanguageSelector, translated text
 - Hydration fix: suppressHydrationWarning on body for browser extension compatibility
 
+**Phase 15 — Real Connection & Code Quality Fixes** ✅ Complete
+
+- Removed all hardcoded English text from AuthGuard — now uses `t('auth.accessDenied')` and `t('auth.accessDeniedMessage')` translation keys in 25 languages
+- Added 10 new restaurant translation keys: `restaurant.live`, `restaurant.reconnecting`, `restaurant.ingredients`, `restaurant.promotions`, `restaurant.overview`, `restaurant.noOrders`, `restaurant.activeOrders`, `restaurant.readyOrders`, `restaurant.menuItems`, `restaurant.unpaid`, `restaurant.available`, `restaurant.occupied`
+- Added 2 new auth translation keys: `auth.accessDenied`, `auth.accessDeniedMessage` in 25 languages
+- Fixed API bridge routes: replaced static `/api/restaurants/items` and `/api/restaurants/sections` with dynamic `/api/restaurants/[restaurantId]/items`, `/api/restaurants/[restaurantId]/sections`, `/api/restaurants/[restaurantId]/tables`, `/api/restaurants/[restaurantId]/orders`, `/api/restaurants/[restaurantId]/staff`
+- Fixed API bridge error responses: proper status codes (400, 503) instead of `success: false, data: []` with status 200
+- Moved ALL hardcoded mock data from JSX into organized mock files: `apps/web/lib/mock/ma-data.ts` and `apps/web/lib/mock/restaurant-data.ts`
+- /ma page now imports mock data from organized files instead of inline JSX
+- Restaurant Dashboard now imports mock data from organized files instead of inline JSX
+- Added `badge-success`, `badge-warning`, `badge-error` CSS classes to globals.scss
+- Fixed Restaurant Dashboard "Live"/"Reconnecting..." hardcoded text — now uses `t('restaurant.live')` and `t('restaurant.reconnecting')`
+- Fixed Restaurant Dashboard `PlaceholderTab` using hardcoded `'en'` — now uses `useLanguage()` hook
+- Fixed README.md: changed `/admin` to `/ma` in platforms table
+- Fixed 3 pre-existing gateway test failures by stopping microservices before running tests (ports 4001-4004 must be free for accurate test results)
+- All 154 tests pass, typecheck passes (0 errors), production build succeeds (21 routes)
+
 ## [COMPLETED]
 
 ### Phase 1 — Project Foundation
@@ -472,10 +489,12 @@ npm run db:studio
 ## [ORPHANS & PENDING]
 
 - [ ] Real-time order updates on staff/restaurant dashboards — SSE connected but UI needs live order cards
-- [ ] API bridge routes for menu CRUD (menu items currently static/demo data)
-- [ ] API bridge routes for order creation from customer flow
+- [ ] API bridge routes for menu CRUD (menu items currently from mock data)
+- [ ] Order creation from customer flow — POST /api/orders/create bridge exists but needs integration in UI
 - [ ] Full order tracking page with real status progression
 - [ ] QR code generation — stub exists
+- [ ] Platform admin real data (stats, restaurants, users, plans, countries) — currently from organized mock data files (apps/web/lib/mock/ma-data.ts)
+- [ ] Restaurant dashboard real data (menu, tables, staff, orders) — currently from organized mock data files (apps/web/lib/mock/restaurant-data.ts)
 - [ ] Payment provider integration — post-MVP
 - [ ] Full inventory system — post-MVP
 - [ ] Full finance system — post-MVP
@@ -489,6 +508,7 @@ npm run db:studio
 - [ ] Redis usage in business logic — foundation only, not yet consuming
 - [ ] Redis session store — sessions currently in PostgreSQL
 - [ ] Middleware checks cookie existence only (not session validity) — actual verification on client side
+- [ ] Gateway tests (3) require ports 4001-4004 to be free — running services interfere with timeout/proxy expectations
 
 ## [LOCAL DEVELOPMENT STABILITY]
 

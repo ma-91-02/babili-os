@@ -8,7 +8,7 @@ Babili is a SaaS restaurant operating system that connects tables, kitchen, and 
 
 | Platform   | Domain                        | Path                  |
 | ---------- | ----------------------------- | --------------------- |
-| Admin      | admin.babili.your-ma.com      | `/admin`              |
+| Admin      | admin.babili.your-ma.com      | `/ma`                 |
 | Restaurant | restaurant.babili.your-ma.com | `/restaurant`         |
 | Staff      | staff.babili.your-ma.com      | `/staff`              |
 | Customer   | customer.babili.your-ma.com   | `/customer`           |

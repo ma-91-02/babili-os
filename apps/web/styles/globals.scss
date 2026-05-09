@@ -191,6 +191,21 @@ h6 {
   font-weight: 500;
   background-color: $color-secondary;
   color: $color-main;
+
+  &-success {
+    background-color: color.adjust($color-success, $lightness: 45%);
+    color: $color-success;
+  }
+
+  &-warning {
+    background-color: color.adjust($color-warning, $lightness: 40%);
+    color: color.adjust($color-warning, $lightness: -20%);
+  }
+
+  &-error {
+    background-color: color.adjust($color-error, $lightness: 40%);
+    color: $color-error;
+  }
 }
 
 // Skeleton loading

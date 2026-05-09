@@ -60,8 +60,8 @@ export function AuthGuard({ children, allowedRoles, fallback }: AuthGuardProps) 
           textAlign: 'center',
         }}
       >
-        <h1>Access Denied</h1>
-        <p style={{ color: '#6b7280' }}>You do not have permission to access this page.</p>
+        <h1>{t('auth.accessDenied', lang)}</h1>
+        <p style={{ color: '#6b7280' }}>{t('auth.accessDeniedMessage', lang)}</p>
       </div>
     );
   }

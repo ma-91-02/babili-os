@@ -134,9 +134,13 @@ async function authMiddleware(req: Request, res: Response, next: NextFunction): 
   const authServiceUrl = serviceMap.get('auth-service')?.url ?? 'http://localhost:4001';
 
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 3000);
     const response = await fetch(`${authServiceUrl}/api/v1/auth/verify`, {
       headers: { Authorization: `Bearer ${token}` },
+      signal: controller.signal,
     });
+    clearTimeout(timeout);
 
     if (!response.ok) {
       res.status(401).json({ success: false, error: 'Invalid or expired token' });
@@ -145,6 +149,11 @@ async function authMiddleware(req: Request, res: Response, next: NextFunction): 
 
     const body = await response.json();
     const user = body.data;
+
+    if (!user) {
+      res.status(401).json({ success: false, error: 'Invalid token response' });
+      return;
+    }
 
     (req as any).authHeaders = {
       'X-Auth-User-Id': user.userId,
