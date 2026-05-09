@@ -15,7 +15,8 @@ function LoginForm() {
   const [password, setPassword] = useState('');
   const [formError, setFormError] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const { login, error } = useAuth();
+  const { login } = useAuth();
+  const platformRoles = ['platform_admin', 'platform_owner'];
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -30,11 +31,12 @@ function LoginForm() {
 
     setSubmitting(true);
     try {
-      await login(email, password);
-      const redirectTo = searchParams.get('redirect') || '/restaurant';
+      const userData = await login(email, password);
+      const defaultPath = platformRoles.includes(userData.role) ? '/ma' : '/restaurant';
+      const redirectTo = searchParams.get('redirect') || defaultPath;
       router.push(redirectTo);
-    } catch {
-      setFormError(error || t('auth.invalidCredentials', lang));
+    } catch (err) {
+      setFormError((err as Error)?.message || t('auth.invalidCredentials', lang));
     } finally {
       setSubmitting(false);
     }

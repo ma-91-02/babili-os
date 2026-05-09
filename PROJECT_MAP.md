@@ -490,11 +490,14 @@ npm run db:studio
 
 - [ ] Real-time order updates on staff/restaurant dashboards — SSE connected but UI needs live order cards
 - [ ] API bridge routes for menu CRUD (menu items currently from mock data)
-- [ ] Order creation from customer flow — POST /api/orders/create bridge exists but needs integration in UI
+- [x] Order creation from customer flow — POST /api/orders/create connected in customer page (submits cart, shows order ID on success)
+- [x] Login redirect — platform_admin/platform_owner now redirected to /ma; others go to /restaurant
+- [x] API bridge route: GET /api/restaurants/slug/[slug] — looks up restaurant ID by slug
 - [ ] Full order tracking page with real status progression
 - [ ] QR code generation — stub exists
 - [ ] Platform admin real data (stats, restaurants, users, plans, countries) — currently from organized mock data files (apps/web/lib/mock/ma-data.ts)
 - [ ] Restaurant dashboard real data (menu, tables, staff, orders) — currently from organized mock data files (apps/web/lib/mock/restaurant-data.ts)
+- [ ] QR menu (/r/[restaurantSlug]) order submission — still uses mock-only flow (no API call)
 - [ ] Payment provider integration — post-MVP
 - [ ] Full inventory system — post-MVP
 - [ ] Full finance system — post-MVP
@@ -534,24 +537,22 @@ npm run db:studio
 
 ## [NEXT STEPS]
 
-**No further phases planned.** The MVP is feature-complete with:
+### Priority (wired but on mock data — connect to real backend)
 
-- Phase 1: Project Foundation
-- Phase 2: Shared Core
-- Phase 3: Translation Service
-- Phase 4: Auth Service
-- Phase 5: Restaurant Service
-- Phase 6: Order Service
-- Phase 7: API Gateway
-- Phase 8: Web Platforms
-- Phase 9: Documentation and Verification
-- Phase 10: Database Integration + Redis Foundation
-- Phase 11: Auth Middleware + Route Protection + Service-to-Service Security
-- Phase 12: Web Platform Authentication
-- Phase 13: Real-time Communication
-- Phase 14: Platform UI Buildout
+1. Connect /ma Overview stats to real Prisma counts (restaurants, users, plans) via Platform Admin API endpoints
+2. Connect Restaurant Dashboard tabs (menu, tables, staff, orders) to real backend data via dynamic API bridges
+3. Connect QR menu (/r/[restaurantSlug]) order submission to /api/orders/create bridge (same pattern as /customer)
 
-**Post-MVP candidates:**
+### Secondary
+
+4. Add ingredient notes / modifier support in customer cart UI
+5. Verify Docker Compose works end-to-end (`docker compose -f docker-compose.dev.yml up`)
+6. Document any remaining temporary mock data explicitly in PROJECT_MAP.md
+7. Real-time order cards on staff/restaurant dashboards (SSE connected, UI pending)
+8. Full order tracking page with real status progression
+9. QR code generation
+
+### Post-MVP
 
 - Payment gateway integration
 - Full inventory system

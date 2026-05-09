@@ -128,13 +128,16 @@ function UsersTab({ lang }: { lang: SupportedLanguage }) {
   );
 }
 
-function PlansTab({ lang: _lang }: { lang: SupportedLanguage }) {
+function PlansTab({ lang }: { lang: SupportedLanguage }) {
   return (
     <div className={styles.grid}>
       {MOCK_PLANS.map((plan) => (
         <div key={plan.name} className="card">
           <h3>{plan.name}</h3>
-          <p className={styles.planName}>${plan.price}/mo</p>
+          <p className={styles.planName}>
+            ${plan.price}
+            {t('common.perMonth', lang)}
+          </p>
           <p className={styles.statLabel}>{plan.description}</p>
         </div>
       ))}
@@ -187,7 +190,7 @@ function TranslationsTab({ lang }: { lang: SupportedLanguage }) {
           {MOCK_TRANSLATION_CATEGORIES.map((cat) => (
             <tr key={cat.name}>
               <td>
-                {cat.name} ({cat.keyCount} keys)
+                {cat.name} ({cat.keyCount} {t('common.keys', lang)})
               </td>
               <td>
                 <span
@@ -250,9 +253,11 @@ function HealthTab({ lang }: { lang: SupportedLanguage }) {
     <div>
       <div className={styles.grid}>
         <div className="card">
-          <h3>API Gateway</h3>
+          <h3>{t('health.apiGateway', lang)}</h3>
           <p className={styles.stat}>{health?.gateway?.status === 'ok' ? '✓' : '✗'}</p>
-          <p className={styles.statLabel}>uptime: {Math.floor(health?.gateway?.uptime ?? 0)}s</p>
+          <p className={styles.statLabel}>
+            {t('health.uptime', lang)}: {Math.floor(health?.gateway?.uptime ?? 0)}s
+          </p>
         </div>
         {services.map((svc) => (
           <div key={svc.service} className="card">
@@ -280,7 +285,7 @@ function HealthTab({ lang }: { lang: SupportedLanguage }) {
             >
               {health?.overall === 'healthy' ? '✓' : '✗'}
             </p>
-            <p className={styles.statLabel}>{health?.overall ?? 'unknown'}</p>
+            <p className={styles.statLabel}>{health?.overall ?? t('common.unknown', lang)}</p>
           </div>
         )}
       </div>

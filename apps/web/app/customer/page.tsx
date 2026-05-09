@@ -1,14 +1,17 @@
 'use client';
 
-import { useState, type Dispatch, type SetStateAction } from 'react';
+import { useState, useEffect, useCallback, type Dispatch, type SetStateAction } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/components/LanguageProvider';
 import { LanguageSelector } from '@/components/LanguageSelector';
+import { useAuth } from '@/components/auth/AuthProvider';
 import { t, getBrandName } from '../../lib/i18n';
 import type { SupportedLanguage } from '@babili/shared';
 import styles from './customer.module.scss';
 
 interface CartItem {
   id: string;
+  menuItemId: string;
   name: string;
   price: number;
   quantity: number;
@@ -16,7 +19,7 @@ interface CartItem {
   removedIngredients: string[];
 }
 
-type Page = 'menu' | 'cart' | 'order';
+type Page = 'menu' | 'cart' | 'submitting' | 'order';
 
 interface MenuSection {
   id: string;
@@ -191,7 +194,7 @@ function MenuView({
   setCart: Dispatch<SetStateAction<CartItem[]>>;
   setPage: (page: Page) => void;
 }) {
-  const addToCart = (item: { id: string; name: string; price: number }) => {
+  const addToCart = (item: { id: string; menuItemId: string; name: string; price: number }) => {
     setCart((prev: CartItem[]) => {
       const existing = prev.find((ci: CartItem) => ci.id === item.id);
       if (existing) {
@@ -229,6 +232,7 @@ function MenuView({
                     onClick={() =>
                       addToCart({
                         id: item.id,
+                        menuItemId: item.id,
                         name: getLocalized(item.name, lang),
                         price: item.price,
                       })
@@ -262,11 +266,15 @@ function CartView({
   cart,
   setCart,
   setPage,
+  submitting,
+  onSubmitOrder,
 }: {
   lang: SupportedLanguage;
   cart: CartItem[];
   setCart: Dispatch<SetStateAction<CartItem[]>>;
   setPage: (page: Page) => void;
+  submitting: boolean;
+  onSubmitOrder: () => void;
 }) {
   const total = cart.reduce((sum, ci) => sum + ci.price * ci.quantity, 0);
 
@@ -321,8 +329,8 @@ function CartView({
             <span>{t('nav.orders', lang)}:</span>
             <strong>{total}</strong>
           </div>
-          <button className="btn btn-primary" onClick={() => setPage('order')}>
-            {t('common.confirm', lang)}
+          <button className="btn btn-primary" onClick={onSubmitOrder} disabled={submitting}>
+            {submitting ? t('common.loading', lang) : t('common.confirm', lang)}
           </button>
         </div>
       )}
@@ -330,13 +338,34 @@ function CartView({
   );
 }
 
-function OrderView({ lang, setPage }: { lang: SupportedLanguage; setPage: (page: Page) => void }) {
+function OrderView({
+  lang,
+  orderResult,
+  setPage,
+}: {
+  lang: SupportedLanguage;
+  orderResult: { success: boolean; orderId?: string; error?: string } | null;
+  setPage: (page: Page) => void;
+}) {
   return (
     <div className={styles.orderPage}>
       <div className={styles.orderSuccess}>
-        <div className={styles.checkMark}>✓</div>
-        <h1>{t('nav.orders', lang)}</h1>
-        <p>{t('common.loading', lang)}</p>
+        {orderResult?.success ? (
+          <>
+            <div className={styles.checkMark}>✓</div>
+            <h1>{t('nav.orders', lang)}</h1>
+            {orderResult.orderId && (
+              <p className={styles.orderId}>#{orderResult.orderId.slice(0, 8)}</p>
+            )}
+            <p>{t('common.loading', lang)}</p>
+          </>
+        ) : (
+          <>
+            <div className={styles.errorMark}>✕</div>
+            <h1>{t('common.error', lang)}</h1>
+            <p>{orderResult?.error || t('common.error', lang)}</p>
+          </>
+        )}
         <button className="btn btn-primary" onClick={() => setPage('menu')}>
           {t('nav.menu', lang)}
         </button>
@@ -345,10 +374,88 @@ function OrderView({ lang, setPage }: { lang: SupportedLanguage; setPage: (page:
   );
 }
 
+function SubmittingView({ lang }: { lang: SupportedLanguage }) {
+  return (
+    <div className={styles.orderPage}>
+      <div className={styles.orderSuccess}>
+        <div className={styles.spinner} />
+        <h1>{t('common.loading', lang)}</h1>
+        <p>{t('nav.orders', lang)}</p>
+      </div>
+    </div>
+  );
+}
+
 export default function CustomerPage() {
   const { lang } = useLanguage();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const { user } = useAuth();
   const [page, setPage] = useState<Page>('menu');
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [orderResult, setOrderResult] = useState<{
+    success: boolean;
+    orderId?: string;
+    error?: string;
+  } | null>(null);
+  const [restaurantId, setRestaurantId] = useState<string | null>(null);
+
+  const restaurantSlug = searchParams.get('restaurant') || 'babylon-bistro';
+
+  useEffect(() => {
+    fetch(`/api/restaurants/slug/${restaurantSlug}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success && data.data?.id) {
+          setRestaurantId(data.data.id);
+        }
+      })
+      .catch(() => {});
+  }, [restaurantSlug]);
+
+  const submitOrder = useCallback(async () => {
+    if (!user) {
+      router.push(`/login?redirect=/customer?restaurant=${restaurantSlug}`);
+      return;
+    }
+    if (!restaurantId || cart.length === 0) return;
+
+    setSubmitting(true);
+    setPage('submitting');
+
+    try {
+      const res = await fetch('/api/orders/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          restaurantId,
+          tableId: searchParams.get('table') || null,
+          items: cart.map((ci) => ({
+            menuItemId: ci.menuItemId,
+            name: ci.name,
+            quantity: ci.quantity,
+            price: ci.price,
+            notes: ci.notes || undefined,
+          })),
+          language: lang,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setOrderResult({ success: true, orderId: data.data?.id });
+        setCart([]);
+      } else {
+        setOrderResult({ success: false, error: data.error || t('common.error', lang) });
+      }
+    } catch {
+      setOrderResult({ success: false, error: t('common.error', lang) });
+    } finally {
+      setSubmitting(false);
+      setPage('order');
+    }
+  }, [user, restaurantId, cart, lang, router, restaurantSlug, searchParams]);
 
   return (
     <div className={styles.customer}>
@@ -357,8 +464,18 @@ export default function CustomerPage() {
       </div>
 
       {page === 'menu' && <MenuView lang={lang} cart={cart} setCart={setCart} setPage={setPage} />}
-      {page === 'cart' && <CartView lang={lang} cart={cart} setCart={setCart} setPage={setPage} />}
-      {page === 'order' && <OrderView lang={lang} setPage={setPage} />}
+      {page === 'cart' && (
+        <CartView
+          lang={lang}
+          cart={cart}
+          setCart={setCart}
+          setPage={setPage}
+          submitting={submitting}
+          onSubmitOrder={submitOrder}
+        />
+      )}
+      {page === 'submitting' && <SubmittingView lang={lang} />}
+      {page === 'order' && <OrderView lang={lang} orderResult={orderResult} setPage={setPage} />}
     </div>
   );
 }

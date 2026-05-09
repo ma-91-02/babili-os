@@ -44,14 +44,16 @@ const tabs: { key: Tab; labelKey: string }[] = [
 
 function EventItem({ event }: { event: OrderEvent }) {
   const time = new Date(event.timestamp).toLocaleTimeString();
-  const typeLabel = event.type.replace('order.', '').replace('.', ' → ');
+  const parts = event.type.split('.');
+  const typeLabel = parts.length > 1 ? parts.slice(1).join(' › ') : event.type;
   const status = event.data.orderStatus;
+  const shortId = event.orderId.slice(0, 8);
 
   return (
     <div className={styles.eventItem}>
       <span className={styles.eventTime}>{time}</span>
       <span className={styles.eventType}>{typeLabel}</span>
-      <span className={styles.eventOrder}>#{event.orderId.slice(0, 8)}</span>
+      <span className={styles.eventOrder}>#{shortId}</span>
       {typeof status === 'string' && <span className={styles.eventStatus}>{status}</span>}
     </div>
   );
