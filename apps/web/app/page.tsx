@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useLanguage } from '@/components/LanguageProvider';
 import { LanguageSelector } from '@/components/LanguageSelector';
+import { t } from '../lib/i18n';
 import styles from './page.module.scss';
 
 export default function HomePage() {
@@ -17,16 +18,16 @@ export default function HomePage() {
         </div>
         <nav className={styles.nav}>
           <Link href="/admin" className="btn btn-ghost">
-            Admin
+            {t('nav.admin', lang)}
           </Link>
           <Link href="/restaurant" className="btn btn-ghost">
-            Restaurant
+            {t('nav.dashboard', lang)}
           </Link>
           <Link href="/staff" className="btn btn-ghost">
-            Staff
+            {t('nav.staff', lang)}
           </Link>
           <Link href="/customer" className="btn btn-primary">
-            Customer
+            {t('nav.platforms.customer', lang)}
           </Link>
           <LanguageSelector className={styles.langSelect} />
         </nav>
@@ -34,20 +35,19 @@ export default function HomePage() {
 
       <main className={styles.hero}>
         <div className={styles.heroContent}>
-          <div className={styles.badge}>Smart Restaurant OS</div>
+          <div className={styles.badge}>{t('landing.badge', lang)}</div>
           <h1 className={styles.title}>
-            From table to kitchen —<span className={styles.highlight}> in every language</span>
+            {t('landing.title', lang)}
           </h1>
           <p className={styles.subtitle}>
-            Babili is a multilingual restaurant operating system that connects tables, kitchen, and
-            management in 25 languages.
+            {t('landing.subtitle', lang)}
           </p>
           <div className={styles.cta}>
             <Link href="/customer" className="btn btn-primary">
-              Order Now
+              {t('landing.cta.order', lang)}
             </Link>
             <Link href="/restaurant" className="btn btn-secondary">
-              Manage Restaurant
+              {t('landing.cta.manage', lang)}
             </Link>
           </div>
         </div>
@@ -61,7 +61,7 @@ export default function HomePage() {
       </main>
 
       <footer className={styles.footer}>
-        <p>Babili — Smart multilingual restaurant operations from table to kitchen.</p>
+        <p>{t('landing.footer', lang)}</p>
       </footer>
     </div>
   );

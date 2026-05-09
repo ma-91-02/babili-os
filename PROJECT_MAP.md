@@ -102,8 +102,14 @@ Defined in packages/shared/src/types.ts and permissions.ts
 
 **Colors:**
 
-- Main: #614AE1 | Background: #F0EEFF | Secondary: #E1DCFF
-- Success: #22C55E | Warning: #F59E0B | Error: #EF4444 (limited use)
+| Token              | Value     | Usage                                              |
+| ------------------ | --------- | -------------------------------------------------- |
+| Main (Primary)     | `#2F6B5B` | Primary brand color, buttons, links, active states |
+| Secondary          | `#3E8A73` | Secondary elements, badges, hover states, borders  |
+| Accent             | `#D6A86C` | Accent, highlights, decorative elements            |
+| Background         | `#F6F3EA` | Page background (warm cream)                       |
+| Text               | `#1F2937` | Body and heading text                              |
+| Text Secondary     | `#6B7280` | Secondary text, placeholders                       |
 
 **Design Tokens:** apps/web/styles/\_tokens.scss
 **Global Styles:** apps/web/styles/globals.scss
@@ -111,7 +117,7 @@ Defined in packages/shared/src/types.ts and permissions.ts
 
 **Compliance:**
 - All SCSS files use `@use tokens` variables — no hardcoded brand colors in components
-- login/register SCSS migrated from hardcoded hex to token variables
+- Shadows use rgba(47, 107, 91, ...) — derived from Main color
 - Semantic colors (success, warning, error) used only where appropriate
 
 ## [DOMAIN ROUTING]
@@ -207,17 +213,16 @@ npm run db:studio
 
 ## [CURRENT MILESTONE]
 
-**Phase 10.4 — Fix Design Tokens, Translation Switching, RTL, and Dev Startup Script** ✅ Complete
+**Phase 10.5 — Fix Language Switching, Brand Colors, and Hardcoded Text** ✅ Complete
 
-- All pages use dynamic language from LanguageProvider context
-- Language switching via `?lang=` query param and LanguageSelector dropdown
-- Language persisted in localStorage
-- RTL auto-switching for ar, ur, fa, he via LanguageProvider
-- Login/register/landing/SCSS migrated from hardcoded colors to design tokens
-- scripts/dev-start.mjs now starts Docker, Prisma, seed, microservices, and Next.js
-- npm run dev:start added to root package.json
-- All 154 tests pass, format clean, build succeeds
-- TypeScript typecheck passes with 0 errors
+- LanguageProvider rewritten: reads URL via `window.location.search` on mount + `useSearchParams` for reactivity
+- Brand colors updated to official Babili palette: #2F6B5B, #3E8A73, #D6A86C, #F6F3EA
+- All hardcoded landing page text replaced with `t()` translation calls
+- Landing page translation keys added (landing.badge, .title, .subtitle, .cta.order, .cta.manage, .footer) in 25 languages
+- Nav translation keys added (nav.admin, nav.platforms.customer) in 25 languages
+- AuthGuard uses `useLanguage()` for translated "Loading" text
+- Shadows updated to use rgba(47, 107, 91, ...) from new Main color
+- docs/design-tokens.md updated with new palette
 
 ## [COMPLETED]
 
@@ -401,6 +406,17 @@ npm run db:studio
 - [x] Next.js build passes (15 routes + middleware, 0 errors)
 - [x] All 154 tests pass — no regressions
 - [x] Prettier format — all files clean
+
+### Phase 10.5 — Fix Language Switching, Brand Colors, and Hardcoded Text
+
+- [x] LanguageProvider rewritten: reads URL via `window.location.search` on mount, `useSearchParams` for reactivity
+- [x] Brand colors updated to official palette: #2F6B5B, #3E8A73, #D6A86C, #F6F3EA, #1F2937
+- [x] All landing page hardcoded text replaced with `t()` calls
+- [x] Landing translation keys added in 25 languages (badge, title, subtitle, cta, footer)
+- [x] Nav translation keys added in 25 languages (nav.admin, nav.platforms.customer)
+- [x] AuthGuard uses useLanguage for translated loading text
+- [x] Shadows updated for new green palette
+- [x] docs/design-tokens.md updated with new colors
 
 ### Phase 10.4 — Fix Design Tokens, Translation Switching, RTL, and Dev Startup Script
 

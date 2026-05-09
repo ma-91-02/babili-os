@@ -3,6 +3,8 @@
 import { useEffect, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from './AuthProvider';
+import { useLanguage } from '@/components/LanguageProvider';
+import { t } from '@/lib/i18n';
 
 interface AuthGuardProps {
   children: ReactNode;
@@ -12,6 +14,7 @@ interface AuthGuardProps {
 
 export function AuthGuard({ children, allowedRoles, fallback }: AuthGuardProps) {
   const { user, loading } = useAuth();
+  const { lang } = useLanguage();
   const router = useRouter();
 
   useEffect(() => {
@@ -30,10 +33,10 @@ export function AuthGuard({ children, allowedRoles, fallback }: AuthGuardProps) 
           alignItems: 'center',
           justifyContent: 'center',
           minHeight: '100vh',
-          color: '#6b6b80',
+          color: '#6b7280',
         }}
       >
-        Loading...
+        {t('common.loading', lang)}
       </div>
     );
   }
@@ -58,7 +61,7 @@ export function AuthGuard({ children, allowedRoles, fallback }: AuthGuardProps) 
         }}
       >
         <h1>Access Denied</h1>
-        <p style={{ color: '#6b6b80' }}>You do not have permission to access this page.</p>
+        <p style={{ color: '#6b7280' }}>You do not have permission to access this page.</p>
       </div>
     );
   }

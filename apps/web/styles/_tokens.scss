@@ -1,36 +1,28 @@
-// Design Tokens — Babili Design System
-// Do not use colors outside this system
-
-$color-main: #614ae1;
-$color-bg: #f0eeff;
-$color-secondary: #e1dcff;
+$color-main: #2f6b5b;
+$color-secondary: #3e8a73;
+$color-accent: #d6a86c;
+$color-bg: #f6f3ea;
 
 $color-white: #ffffff;
-$color-black: #0a0a1a;
-$color-text: #1a1a2e;
-$color-text-secondary: #6b6b80;
+$color-black: #1f2937;
+$color-text: #1f2937;
+$color-text-secondary: #6b7280;
 
 $color-success: #22c55e;
 $color-warning: #f59e0b;
 $color-error: #ef4444;
 $color-info: #3b82f6;
 
-$font-family:
-  'Inter',
-  -apple-system,
-  BlinkMacSystemFont,
-  'Segoe UI',
-  Roboto,
-  sans-serif;
+$font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 $font-family-arabic: 'Noto Kufi Arabic', 'Tajawal', sans-serif;
 
 $border-radius-sm: 6px;
 $border-radius-md: 12px;
 $border-radius-lg: 20px;
 
-$shadow-sm: 0 1px 3px rgba(97, 74, 225, 0.08);
-$shadow-md: 0 4px 12px rgba(97, 74, 225, 0.12);
-$shadow-lg: 0 8px 30px rgba(97, 74, 225, 0.16);
+$shadow-sm: 0 1px 3px rgba(47, 107, 91, 0.08);
+$shadow-md: 0 4px 12px rgba(47, 107, 91, 0.12);
+$shadow-lg: 0 8px 30px rgba(47, 107, 91, 0.16);
 
 $transition-fast: 150ms ease;
 $transition-normal: 250ms ease;

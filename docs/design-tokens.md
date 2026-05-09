@@ -4,9 +4,10 @@
 
 | Token              | Value     | Usage                                              |
 | ------------------ | --------- | -------------------------------------------------- |
-| `$color-main`      | `#614AE1` | Primary brand color, buttons, links, active states |
-| `$color-bg`        | `#F0EEFF` | Page background                                    |
-| `$color-secondary` | `#E1DCFF` | Secondary elements, badges, hover states, borders  |
+| `$color-main`      | `#2F6B5B` | Primary brand color, buttons, links, active states |
+| `$color-secondary` | `#3E8A73` | Secondary elements, badges, hover states, borders  |
+| `$color-accent`    | `#D6A86C` | Accent, highlights, decorative elements            |
+| `$color-bg`        | `#F6F3EA` | Page background (warm cream)                       |
 
 ## Semantic Colors
 
@@ -22,9 +23,9 @@
 | Token                   | Value     | Usage                        |
 | ----------------------- | --------- | ---------------------------- |
 | `$color-white`          | `#FFFFFF` | Cards, surfaces              |
-| `$color-black`          | `#0A0A1A` | Headings, primary text       |
-| `$color-text`           | `#1A1A2E` | Body text                    |
-| `$color-text-secondary` | `#6B6B80` | Secondary text, placeholders |
+| `$color-black`          | `#1F2937` | Headings, primary text       |
+| `$color-text`           | `#1F2937` | Body text                    |
+| `$color-text-secondary` | `#6B7280` | Secondary text, placeholders |
 
 ## Typography
 
@@ -39,9 +40,9 @@
 
 ## Shadows
 
-- `$shadow-sm: 0 1px 3px rgba(97, 74, 225, 0.08)`
-- `$shadow-md: 0 4px 12px rgba(97, 74, 225, 0.12)`
-- `$shadow-lg: 0 8px 30px rgba(97, 74, 225, 0.16)`
+- `$shadow-sm: 0 1px 3px rgba(47, 107, 91, 0.08)`
+- `$shadow-md: 0 4px 12px rgba(47, 107, 91, 0.12)`
+- `$shadow-lg: 0 8px 30px rgba(47, 107, 91, 0.16)`
 
 ## Transitions
 
@@ -68,7 +69,7 @@
 2. Responsive: mobile-first, all breakpoints
 3. RTL support via `dir` attribute
 4. No crowded layouts
-5. Modern SaaS feel with Babylon-inspired subtle patterns
+5. Modern SaaS feel with warm, elegant restaurant atmosphere
 6. Clean dashboard aesthetic
 7. No ERP-like appearance
 
