@@ -9,6 +9,7 @@ npm run dev:start
 ```
 
 This single command:
+
 1. Kills stale processes on ports 3000, 4000-4004
 2. Starts PostgreSQL + Redis via Docker
 3. Waits for database readiness
@@ -47,18 +48,18 @@ Open http://localhost:3000 in your browser.
 
 ## Available Scripts
 
-| Script                 | Description                                                      |
-| ---------------------- | ---------------------------------------------------------------- |
-| `npm run dev:start`    | Full one-command dev environment startup                         |
-| `npm run dev`          | Start Next.js dev server (auto-kills stale :3000 process)        |
-| `npm run build`        | Production build                                                 |
-| `npm test`             | Run all tests                                                    |
-| `npm run typecheck`    | TypeScript check                                                 |
-| `npm run format`       | Format all files with Prettier                                   |
-| `npm run health`       | Check all service health endpoints                               |
-| `npm run db:seed`      | Seed demo data (6 users, 1 restaurant, idempotent)               |
-| `npm run db:studio`    | Open Prisma Studio                                               |
-| `npm run db:reset:dev` | Reset DB + re-migrate + re-seed                                  |
+| Script                 | Description                                               |
+| ---------------------- | --------------------------------------------------------- |
+| `npm run dev:start`    | Full one-command dev environment startup                  |
+| `npm run dev`          | Start Next.js dev server (auto-kills stale :3000 process) |
+| `npm run build`        | Production build                                          |
+| `npm test`             | Run all tests                                             |
+| `npm run typecheck`    | TypeScript check                                          |
+| `npm run format`       | Format all files with Prettier                            |
+| `npm run health`       | Check all service health endpoints                        |
+| `npm run db:seed`      | Seed demo data (6 users, 1 restaurant, idempotent)        |
+| `npm run db:studio`    | Open Prisma Studio                                        |
+| `npm run db:reset:dev` | Reset DB + re-migrate + re-seed                           |
 
 ## Services
 
@@ -145,6 +146,7 @@ Babili supports 25 languages with dynamic switching:
 - **RTL**: Arabic, Urdu, Persian, and Hebrew automatically switch to RTL layout
 
 Test with:
+
 - http://localhost:3000/?lang=ar (Arabic/RTL)
 - http://localhost:3000/?lang=en (English)
 - http://localhost:3000/?lang=ru (Russian)

@@ -8,7 +8,7 @@ Babili is a smart multilingual SaaS restaurant operating system. It enables digi
 
 | Platform   | Future Domain                 | Path                | Status                    |
 | ---------- | ----------------------------- | ------------------- | ------------------------- |
-| Admin      | admin.babili.your-ma.com      | /admin              | Working with translations |
+| Admin      | admin.babili.your-ma.com      | /ma                 | Working with translations |
 | Restaurant | restaurant.babili.your-ma.com | /restaurant         | Working with translations |
 | Staff      | staff.babili.your-ma.com      | /staff              | Working with translations |
 | Customer   | customer.babili.your-ma.com   | /customer           | Working with translations |
@@ -102,20 +102,21 @@ Defined in packages/shared/src/types.ts and permissions.ts
 
 **Colors:**
 
-| Token              | Value     | Usage                                              |
-| ------------------ | --------- | -------------------------------------------------- |
-| Main (Primary)     | `#2F6B5B` | Primary brand color, buttons, links, active states |
-| Secondary          | `#3E8A73` | Secondary elements, badges, hover states, borders  |
-| Accent             | `#D6A86C` | Accent, highlights, decorative elements            |
-| Background         | `#F6F3EA` | Page background (warm cream)                       |
-| Text               | `#1F2937` | Body and heading text                              |
-| Text Secondary     | `#6B7280` | Secondary text, placeholders                       |
+| Token          | Value     | Usage                                              |
+| -------------- | --------- | -------------------------------------------------- |
+| Main (Primary) | `#2F6B5B` | Primary brand color, buttons, links, active states |
+| Secondary      | `#3E8A73` | Secondary elements, badges, hover states, borders  |
+| Accent         | `#D6A86C` | Accent, highlights, decorative elements            |
+| Background     | `#F6F3EA` | Page background (warm cream)                       |
+| Text           | `#1F2937` | Body and heading text                              |
+| Text Secondary | `#6B7280` | Secondary text, placeholders                       |
 
 **Design Tokens:** apps/web/styles/\_tokens.scss
 **Global Styles:** apps/web/styles/globals.scss
 **RTL Support:** dir="rtl" attribute, Arabic font family defined, dynamic via LanguageProvider
 
 **Compliance:**
+
 - All SCSS files use `@use tokens` variables — no hardcoded brand colors in components
 - Shadows use rgba(47, 107, 91, ...) — derived from Main color
 - Semantic colors (success, warning, error) used only where appropriate
@@ -124,7 +125,7 @@ Defined in packages/shared/src/types.ts and permissions.ts
 
 Not yet configured. Planned:
 
-- admin.babili.your-ma.com → /admin
+- admin.babili.your-ma.com → /ma
 - restaurant.babili.your-ma.com → /restaurant
 - staff.babili.your-ma.com → /staff
 - customer.babili.your-ma.com → /customer
@@ -213,16 +214,16 @@ npm run db:studio
 
 ## [CURRENT MILESTONE]
 
-**Phase 10.5 — Fix Language Switching, Brand Colors, and Hardcoded Text** ✅ Complete
+**Phase 14 — Platform UI Buildout** ✅ Complete
 
-- LanguageProvider rewritten: reads URL via `window.location.search` on mount + `useSearchParams` for reactivity
-- Brand colors updated to official Babili palette: #2F6B5B, #3E8A73, #D6A86C, #F6F3EA
-- All hardcoded landing page text replaced with `t()` translation calls
-- Landing page translation keys added (landing.badge, .title, .subtitle, .cta.order, .cta.manage, .footer) in 25 languages
-- Nav translation keys added (nav.admin, nav.platforms.customer) in 25 languages
-- AuthGuard uses `useLanguage()` for translated "Loading" text
-- Shadows updated to use rgba(47, 107, 91, ...) from new Main color
-- docs/design-tokens.md updated with new palette
+- /ma replaces /admin as the only official Platform Admin path
+- Platform Admin (/ma) with 8 tabs: Overview, Restaurants, Users, Plans, Countries, Translations, Health, Settings
+- Restaurant Owner Dashboard with 10 tabs: Dashboard, Menu, Orders, Kitchen, Cashier, Tables, Staff, Ingredients, Promotions, Settings
+- Staff Platform with role-based views (waiter, kitchen, cashier, manager, viewer)
+- Customer QR ordering flow with real menu display, cart, quantity controls, and order confirmation
+- Bilingual menu data (ar/en/ru) with getLocalized() helper for language fallback
+- All pages use design tokens, LanguageSelector, translated text
+- Hydration fix: suppressHydrationWarning on body for browser extension compatibility
 
 ## [COMPLETED]
 
@@ -379,7 +380,7 @@ npm run db:studio
 - [x] AuthGuard client component for role-based route protection (loading state, redirect to login, role gating)
 - [x] Login page with email/password form, language selector, error display, Suspense boundary
 - [x] Register page with name/email/password form, language selector
-- [x] Role-based redirect after login (platform_owner/admin → /admin, restaurant roles → /restaurant, staff roles → /staff)
+- [x] Role-based redirect after login (platform_owner/admin → /ma, restaurant roles → /restaurant, staff roles → /staff)
 - [x] Next.js middleware for route protection (checks session_token cookie, redirects to /login with ?redirect= param)
 - [x] Protected platforms: admin (platform_owner, platform_admin), restaurant (all restaurant roles), staff (waiter/kitchen/cashier/manager)
 - [x] Public platforms: landing (/), customer (/customer), QR ordering (/r/[slug]), login, register
@@ -450,8 +451,27 @@ npm run db:studio
 - [x] TypeScript typecheck passes (0 errors)
 - [x] Next.js build succeeds (15 routes + middleware, 0 errors)
 
+### Phase 14 — Platform UI Buildout
+
+- [x] /admin → /ma migration (route, middleware, landing page, all references cleaned)
+- [x] Platform Admin (/ma) with 8 tabs: Overview, Restaurants, Users, Plans, Countries, Translations, Health, Settings
+- [x] Restaurant Owner Dashboard with 10 tabs: Dashboard, Menu, Orders, Kitchen, Cashier, Tables, Staff, Ingredients, Promotions, Settings
+- [x] Staff Platform with role-based tab views (waiter, kitchen, cashier, manager, viewer)
+- [x] Customer ordering page with menu browsing, cart, quantity controls, order confirmation
+- [x] QR menu flow at /r/[restaurantSlug] with full multilingual menu, cart, and order flow
+- [x] Bilingual demo menu data (ar/en/ru) with Record-based localization helper
+- [x] New translation keys: admin.plans, admin.countries, admin.translations, admin.health
+- [x] Hydration error fix: suppressHydrationWarning on body tag
+- [x] All pages use design tokens, LanguageSelector, useLanguage() hook
+- [x] TypeScript typecheck passes (0 errors)
+- [x] Formatting passes (Prettier)
+
 ## [ORPHANS & PENDING]
 
+- [ ] Real-time order updates on staff/restaurant dashboards — SSE connected but UI needs live order cards
+- [ ] API bridge routes for menu CRUD (menu items currently static/demo data)
+- [ ] API bridge routes for order creation from customer flow
+- [ ] Full order tracking page with real status progression
 - [ ] QR code generation — stub exists
 - [ ] Payment provider integration — post-MVP
 - [ ] Full inventory system — post-MVP
@@ -506,6 +526,7 @@ npm run db:studio
 - Phase 11: Auth Middleware + Route Protection + Service-to-Service Security
 - Phase 12: Web Platform Authentication
 - Phase 13: Real-time Communication
+- Phase 14: Platform UI Buildout
 
 **Post-MVP candidates:**
 

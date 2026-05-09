@@ -102,8 +102,7 @@ function LoginForm() {
 
         <div className={styles.footer}>
           <p className={styles.switch}>
-            {t('auth.noAccount', lang)}{' '}
-            <Link href="/register">{t('auth.signUp', lang)}</Link>
+            {t('auth.noAccount', lang)} <Link href="/register">{t('auth.signUp', lang)}</Link>
           </p>
         </div>
 

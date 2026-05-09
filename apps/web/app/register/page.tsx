@@ -117,8 +117,7 @@ export default function RegisterPage() {
 
         <div className={styles.footer}>
           <p className={styles.switch}>
-            {t('auth.hasAccount', lang)}{' '}
-            <Link href="/login">{t('auth.signIn', lang)}</Link>
+            {t('auth.hasAccount', lang)} <Link href="/login">{t('auth.signIn', lang)}</Link>
           </p>
         </div>
 

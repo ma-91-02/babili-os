@@ -76,6 +76,9 @@
   border-radius: $border-radius-sm;
   text-align: left;
   transition: all $transition-fast;
+  background: none;
+  border: none;
+  cursor: pointer;
 
   &:hover {
     background-color: $color-bg;
@@ -91,17 +94,74 @@
   color: $color-text-secondary;
   cursor: pointer;
   transition: all $transition-fast;
+  text-align: left;
+  background: none;
+  border: none;
+  width: 100%;
 
   &:hover {
     background-color: $color-bg;
     color: $color-main;
   }
+}
 
-  &:first-child {
-    background-color: $color-secondary;
-    color: $color-main;
+.activeNav {
+  background-color: $color-secondary;
+  color: $color-main;
+  font-weight: 600;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+.stat {
+  font-size: 2rem;
+  font-weight: 700;
+  color: $color-main;
+  margin: 0.5rem 0;
+}
+
+.statLabel {
+  font-size: 0.8125rem;
+  color: $color-text-secondary;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+
+  h3 {
+    font-size: 1.125rem;
     font-weight: 600;
   }
+}
+
+.kanban {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.roleBadge {
+  font-size: 0.6875rem;
+  padding: 0.125rem 0.5rem;
+  background: $color-secondary;
+  border-radius: 9999px;
+  color: $color-main;
+  font-weight: 500;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.tableGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
 }
 
 .main {

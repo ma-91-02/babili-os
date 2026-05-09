@@ -1,6 +1,15 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, useCallback, useMemo, Suspense, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  Suspense,
+  type ReactNode,
+} from 'react';
 import { useSearchParams, usePathname } from 'next/navigation';
 import { SUPPORTED_LANGUAGES, RTL_LANGUAGES, type SupportedLanguage } from '@babili/shared';
 
@@ -77,9 +86,7 @@ function LanguageProviderInner({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <LanguageContext.Provider value={{ lang, setLang, dir }}>
-      {children}
-    </LanguageContext.Provider>
+    <LanguageContext.Provider value={{ lang, setLang, dir }}>{children}</LanguageContext.Provider>
   );
 }
 

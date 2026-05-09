@@ -77,6 +77,9 @@
   border-radius: $border-radius-sm;
   text-align: left;
   transition: all $transition-fast;
+  background: none;
+  border: none;
+  cursor: pointer;
 
   &:hover {
     background-color: $color-bg;
@@ -92,16 +95,95 @@
   color: $color-text-secondary;
   cursor: pointer;
   transition: all $transition-fast;
+  text-align: left;
+  background: none;
+  border: none;
+  width: 100%;
 
   &:hover {
     background-color: $color-bg;
     color: $color-main;
   }
+}
 
-  &:first-child {
-    background-color: $color-secondary;
-    color: $color-main;
+.activeNav {
+  background-color: $color-secondary;
+  color: $color-main;
+  font-weight: 600;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+.stat {
+  font-size: 2rem;
+  font-weight: 700;
+  color: $color-main;
+  margin: 0.5rem 0;
+}
+
+.statLabel {
+  font-size: 0.8125rem;
+  color: $color-text-secondary;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+
+  h3 {
+    font-size: 1.125rem;
     font-weight: 600;
+  }
+}
+
+.menuGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.tableGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.tableCard {
+  background: $color-white;
+  border: 1px solid $color-secondary;
+  border-radius: $border-radius-md;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    text-align: left;
+    padding: 0.75rem 0.5rem;
+    border-bottom: 1px solid $color-secondary;
+    font-size: 0.875rem;
+  }
+
+  th {
+    font-weight: 600;
+    color: $color-text-secondary;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  td {
+    color: $color-text;
   }
 }
 

@@ -17,9 +17,6 @@ export default function HomePage() {
           <span className={styles.logoText}>Babili</span>
         </div>
         <nav className={styles.nav}>
-          <Link href="/admin" className="btn btn-ghost">
-            {t('nav.admin', lang)}
-          </Link>
           <Link href="/restaurant" className="btn btn-ghost">
             {t('nav.dashboard', lang)}
           </Link>
@@ -36,12 +33,8 @@ export default function HomePage() {
       <main className={styles.hero}>
         <div className={styles.heroContent}>
           <div className={styles.badge}>{t('landing.badge', lang)}</div>
-          <h1 className={styles.title}>
-            {t('landing.title', lang)}
-          </h1>
-          <p className={styles.subtitle}>
-            {t('landing.subtitle', lang)}
-          </p>
+          <h1 className={styles.title}>{t('landing.title', lang)}</h1>
+          <p className={styles.subtitle}>{t('landing.subtitle', lang)}</p>
           <div className={styles.cta}>
             <Link href="/customer" className="btn btn-primary">
               {t('landing.cta.order', lang)}

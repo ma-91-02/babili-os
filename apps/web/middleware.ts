@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 
 const PUBLIC_ROUTES = ['/', '/login', '/register', '/customer', '/r'];
 
-const PROTECTED_PREFIXES = ['/admin', '/restaurant', '/staff'];
+const PROTECTED_PREFIXES = ['/ma', '/restaurant', '/staff'];
 
 function preserveLang(request: NextRequest, response: NextResponse): NextResponse {
   const lang = request.nextUrl.searchParams.get('lang');
