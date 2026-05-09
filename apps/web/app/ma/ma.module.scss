@@ -147,6 +147,14 @@
   margin: 0.5rem 0;
 }
 
+.statOk {
+  color: $color-success;
+}
+
+.statError {
+  color: $color-error;
+}
+
 .statLabel {
   font-size: 0.8125rem;
   color: $color-text-secondary;

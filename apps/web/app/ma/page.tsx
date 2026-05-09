@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { AuthGuard } from '@/components/auth/AuthGuard';
 import { useLanguage } from '@/components/LanguageProvider';
@@ -250,48 +250,78 @@ function TranslationsTab({ lang }: { lang: SupportedLanguage }) {
   );
 }
 
+interface HealthStatus {
+  service: string;
+  status: 'ok' | 'down' | 'error';
+  data: Record<string, unknown> | null;
+}
+
+interface HealthData {
+  gateway: { status: string; uptime: number };
+  services: HealthStatus[];
+  overall: string;
+}
+
 function HealthTab({ lang }: { lang: SupportedLanguage }) {
+  const [health, setHealth] = useState<HealthData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    fetch('/api/health')
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success) setHealth(d.data);
+        else setHealth(null);
+      })
+      .catch(() => setHealth(null))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="card">
+        <p>{t('common.loading', lang)}</p>
+      </div>
+    );
+  }
+
+  const services = health?.services ?? [
+    { service: 'api-gateway', status: 'down', data: null },
+    { service: 'auth-service', status: 'down', data: null },
+    { service: 'restaurant-service', status: 'down', data: null },
+    { service: 'order-service', status: 'down', data: null },
+    { service: 'translation-service', status: 'down', data: null },
+  ];
+
   return (
-    <div className={styles.grid}>
-      <div className="card">
-        <h3>{t('admin.health', lang)}</h3>
-        <p className={styles.stat}>✓</p>
-        <p className={styles.statLabel}>Web App (:3000)</p>
-      </div>
-      <div className="card">
-        <h3>{t('admin.health', lang)}</h3>
-        <p className={styles.stat}>✓</p>
-        <p className={styles.statLabel}>API Gateway (:4000)</p>
-      </div>
-      <div className="card">
-        <h3>{t('admin.health', lang)}</h3>
-        <p className={styles.stat}>✓</p>
-        <p className={styles.statLabel}>Auth Service (:4001)</p>
-      </div>
-      <div className="card">
-        <h3>{t('admin.health', lang)}</h3>
-        <p className={styles.stat}>✓</p>
-        <p className={styles.statLabel}>Restaurant Service (:4002)</p>
-      </div>
-      <div className="card">
-        <h3>{t('admin.health', lang)}</h3>
-        <p className={styles.stat}>✓</p>
-        <p className={styles.statLabel}>Order Service (:4003)</p>
-      </div>
-      <div className="card">
-        <h3>{t('admin.health', lang)}</h3>
-        <p className={styles.stat}>✓</p>
-        <p className={styles.statLabel}>Translation Service (:4004)</p>
-      </div>
-      <div className="card">
-        <h3>{t('admin.health', lang)}</h3>
-        <p className={styles.stat}>✓</p>
-        <p className={styles.statLabel}>PostgreSQL</p>
-      </div>
-      <div className="card">
-        <h3>{t('admin.health', lang)}</h3>
-        <p className={styles.stat}>✓</p>
-        <p className={styles.statLabel}>Redis</p>
+    <div>
+      <div className={styles.grid}>
+        <div className="card">
+          <h3>API Gateway</h3>
+          <p className={styles.stat}>{health?.gateway?.status === 'ok' ? '✓' : '✗'}</p>
+          <p className={styles.statLabel}>uptime: {Math.floor(health?.gateway?.uptime ?? 0)}s</p>
+        </div>
+        {services.map((svc) => (
+          <div key={svc.service} className="card">
+            <h3>{svc.service}</h3>
+            <p
+              className={`${styles.stat} ${svc.status === 'ok' ? styles.statOk : styles.statError}`}
+            >
+              {svc.status === 'ok' ? '✓' : '✗'}
+            </p>
+            <p className={styles.statLabel}>{svc.status}</p>
+          </div>
+        ))}
+        <div className="card">
+          <h3>{t('admin.health', lang)}</h3>
+          <p
+            className={`${styles.stat} ${health?.overall === 'healthy' ? styles.statOk : styles.statError}`}
+          >
+            {health?.overall === 'healthy' ? '✓' : '✗'}
+          </p>
+          <p className={styles.statLabel}>{health?.overall ?? 'unknown'}</p>
+        </div>
       </div>
     </div>
   );

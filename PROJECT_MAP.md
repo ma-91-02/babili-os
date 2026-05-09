@@ -463,6 +463,9 @@ npm run db:studio
 - [x] New translation keys: admin.plans, admin.countries, admin.translations, admin.health
 - [x] Hydration error fix: suppressHydrationWarning on body tag
 - [x] All pages use design tokens, LanguageSelector, useLanguage() hook
+- [x] New API bridge routes: /api/health, /api/restaurants/sections, /api/restaurants/items, /api/orders/create
+- [x] Real system health monitoring in /ma (fetches from /api/health → API Gateway aggregated health)
+- [x] Next.js production build passes (18 routes + middleware, 0 errors)
 - [x] TypeScript typecheck passes (0 errors)
 - [x] Formatting passes (Prettier)
 
