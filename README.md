@@ -1,155 +1,160 @@
-# Babili — بابلي
+# Babili OS — بابلي
 
-**Smart multilingual restaurant operations from table to kitchen.**
+> Babili is building the global food system.
 
-Babili is a SaaS restaurant operating system that connects tables, kitchen, and management in 25 languages. Every stakeholder sees the information in their own language through centralized translation.
+بابلي هو نظام عالمي للطعام يربط بين:
 
-## Platforms
+- المستخدم
+- المطعم
+- المطبخ
+- الكاشير
+- الاكتشاف
+- الترجمة
+- الطلبات
+- المحتوى
+- التقييمات
+- المدن
+- السفر
 
-| Platform   | Domain                        | Path                  |
-| ---------- | ----------------------------- | --------------------- |
-| Admin      | admin.babili.your-ma.com      | `/ma`                 |
-| Restaurant | restaurant.babili.your-ma.com | `/restaurant`         |
-| Staff      | staff.babili.your-ma.com      | `/staff`              |
-| Customer   | customer.babili.your-ma.com   | `/customer`           |
-| QR Menu    | —                             | `/r/[restaurantSlug]` |
-| API        | api.babili.your-ma.com        | —                     |
+ضمن تجربة موحدة، سهلة، متعددة اللغات، وقابلة للتوسع عالميًا.
 
-## Tech Stack
+---
 
-- **Monorepo:** npm workspaces
-- **Frontend:** Next.js 15, TypeScript, SCSS Modules
-- **Backend:** Node.js 23, TypeScript, Express
-- **Database:** PostgreSQL 16 with Prisma 6 ORM
-- **Cache:** Redis 7 via ioredis
-- **Testing:** Vitest 4, Supertest
-- **Deployment:** Docker, Docker Compose, Coolify-ready
+# Documentation Entry Point
 
-## Getting Started
+جميع وثائق المشروع الرسمية تبدأ من:
 
-### Prerequisites
+- [`docs/MASTER_DOCUMENTATION_STRUCTURE.md`](./docs/MASTER_DOCUMENTATION_STRUCTURE.md)
 
-- Node.js >= 20
-- npm >= 10
-- Docker (for PostgreSQL and Redis)
+هذا الملف هو المرجع الرئيسي لفهم:
 
-### Local Development
+- الرؤية
+- الفلسفة
+- البنية
+- خارطة الطريق
+- القواعد الأساسية
+- تنظيم التوثيق
 
-```bash
-# Install dependencies
-npm install
+---
 
-# Copy environment file
-cp .env.example .env
+# Core Vision
 
-# Start PostgreSQL and Redis
-docker compose -f docker-compose.dev.yml up -d postgres redis
+بابلي ليس:
 
-# Run database migrations
-npm run db:migrate:dev
+- QR Menu فقط
+- POS فقط
+- تطبيق توصيل فقط
+- ERP فقط
 
-# Generate Prisma client
-npm run db:generate
+بل:
 
-# Start development server
-npm run dev
+> النظام العالمي للطعام.
 
-# Run tests
-npm test
+---
 
-# Type check
-npm run typecheck
+# Core Principles
 
-# Format code
-npm run format
+بابلي يعتمد على:
 
-# Open Prisma Studio (database GUI)
-npm run db:studio
-```
+- Apple-level Experience
+- Ecosystem Thinking
+- Global-first Mindset
+- Software-first Expansion
+- Web-first Architecture
+- Multi-tenant Architecture
+- Microservices Architecture
+- Trust & Reputation Systems
+- Operational Calmness
 
-### One-Command Dev Start
+التفاصيل الكاملة:
 
-```bash
-npm run dev:start
-```
+- [`docs/core-product-principles.md`](./docs/core-product-principles.md)
 
-Starts everything: Docker services, Prisma setup, microservices, and Next.js.
+---
 
-### Docker Development
+# Master Documentation Structure
 
-```bash
-npm run docker:dev
-```
+## 1. Core Vision Layer
 
-### Docker Production
+- [`vision-and-identity.md`](./docs/vision-and-identity.md)
+- [`core-product-principles.md`](./docs/core-product-principles.md)
+- [`system-boundaries.md`](./docs/system-boundaries.md)
+- [`architecture-decision-records.md`](./docs/architecture-decision-records.md)
 
-```bash
-npm run docker:prod
-```
+## 2. Product Strategy Layer
 
-### Health Check
+- [`product-roadmap.md`](./docs/product-roadmap.md)
+- [`MASTER_TODO.md`](./docs/MASTER_TODO.md)
 
-```bash
-npm run health
-```
+## 3. Documentation Navigation
 
-Checks all 6 services (Web, API Gateway, Auth, Restaurant, Order, Translation).
+- [`MASTER_DOCUMENTATION_STRUCTURE.md`](./docs/MASTER_DOCUMENTATION_STRUCTURE.md)
 
-## Troubleshooting
+---
 
-See [docs/running.md](docs/running.md) for troubleshooting 500 errors, port conflicts, and database issues.
+# Tech Stack
 
-## Project Structure
+- Frontend: Next.js + TypeScript
+- Backend: Node.js + Express
+- Database: PostgreSQL + Prisma
+- Cache: Redis
+- Architecture: Microservices + Multi-tenant
+- Deployment: Docker + Coolify
 
-```
-babili/
-├── apps/web/              # Next.js web application
-├── services/              # Backend microservices
-│   ├── api-gateway/
-│   ├── auth-service/
-│   ├── restaurant-service/
-│   ├── order-service/
-│   └── translation-service/
-├── packages/
-│   ├── shared/            # Shared types, constants, utilities
-│   └── database/          # Prisma client + Redis client
-├── docs/                  # Documentation
-└── docker-compose.yml
-```
+---
 
-## Database
+# Development Philosophy
 
-- **ORM:** Prisma 6
-- **Provider:** PostgreSQL 16
-- **Client:** `@babili/database` package
-- **Schema:** `packages/database/prisma/schema.prisma`
-- **Migration:** Initial migration applied (all core models)
+بابلي يجب أن يبقى دائمًا:
 
-### Database Scripts
+- Clean Architecture
+- Modular
+- Scalable
+- Multi-language
+- RTL-ready
+- Web-first
+- Production-ready
+- Global-first
 
-```bash
-npm run db:generate        # Generate Prisma client
-npm run db:migrate:dev     # Apply migrations (dev)
-npm run db:migrate:deploy  # Apply migrations (prod)
-npm run db:seed            # Seed dev database (idempotent)
-npm run db:reset:dev       # Reset + re-migrate + re-seed
-npm run db:studio          # Open Prisma Studio
-```
+---
 
-## Services Storage
+# Current Direction
 
-| Service             | Storage    | Notes                             |
-| ------------------- | ---------- | --------------------------------- |
-| auth-service        | PostgreSQL | Users, sessions, tokens           |
-| restaurant-service  | PostgreSQL | Restaurants, menus, tables, staff |
-| order-service       | PostgreSQL | Orders, items, status events      |
-| translation-service | In-memory  | Static translation data           |
-| api-gateway         | None       | Stateless routing                 |
+التركيز الحالي:
 
-## Supported Languages
+1. تثبيت الرؤية
+2. تنظيم التوثيق
+3. تحديد MVP الحقيقي
+4. بناء Product Architecture
+5. منع Feature Explosion
+6. الحفاظ على البساطة والجودة
 
-25 languages including RTL support for Arabic, Urdu, Persian, and Hebrew.
+---
 
-## License
+# Master TODO System
 
-Proprietary — All rights reserved.
+جميع المهام تم توحيدها داخل:
+
+- [`docs/MASTER_TODO.md`](./docs/MASTER_TODO.md)
+
+ويعتبر المرجع الرسمي لـ:
+
+- Product Management
+- Infrastructure
+- Backend
+- Frontend
+- Security
+- AI
+- QA
+- Business
+- Global Expansion
+
+---
+
+# Core Rule
+
+بابلي ليس مجموعة Features منفصلة.
+
+بابلي:
+
+> طبقة تحتية عالمية للطعام.
