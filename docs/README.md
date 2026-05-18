@@ -1,25 +1,77 @@
-# توثيق مشروع بابلي (Babili OS)
+# Babili OS Documentation Hub
 
-هذا المجلد هو المصدر الرسمي لتوثيق رؤية ومنتج ونظام بابلي باللغة العربية.
+هذا الملف هو نقطة الدخول الرسمية لجميع وثائق بابلي.
 
-الغرض من هذا التوثيق هو منع ضياع النقاشات والقرارات الاستراتيجية، وتحويل الرؤية إلى وثائق قابلة للتطوير والمراجعة والتنفيذ.
+## ما هو بابلي؟
 
-## هيكل التوثيق الحالي
+بابلي هو النظام العالمي للطعام.
+
+منصة تربط بين المستخدم والمطعم والمطبخ والكاشير والاكتشاف والترجمة والطلبات ضمن تجربة موحدة متعددة اللغات.
+
+---
+
+# Documentation Layers
+
+## 1. Core Vision Layer
 
 | الملف | الغرض |
 |---|---|
-| [الرؤية والهوية](./vision-and-identity.md) | توثيق الرؤية الكبرى، هوية المنتج، الفلسفة، المستخدمين، والقيمة الأساسية لبابلي. |
-| [خارطة الطريق المنتجية](./product-roadmap.md) | تقسيم بابلي إلى مراحل واضحة من النسخة الأولى حتى النظام العالمي للطعام. |
+| [vision-and-identity.md](./vision-and-identity.md) | الرؤية والهوية |
+| [core-product-principles.md](./core-product-principles.md) | المبادئ الأساسية |
+| [system-boundaries.md](./system-boundaries.md) | حدود النظام |
+| [architecture-decision-records.md](./architecture-decision-records.md) | القرارات المعمارية |
 
-## القاعدة الأساسية
+---
 
-بابلي ليس مجرد QR Menu أو نظام POS أو تطبيق توصيل.
+## 2. Product Strategy Layer
 
-بابلي هو نظام عالمي للطعام يهدف إلى ربط الزبون والمطعم والمطبخ والكاشير والمحتوى والاكتشاف والتوصيل لاحقًا في تجربة واحدة موحدة، سهلة، فاخرة، ومتعددة اللغات.
+| الملف | الغرض |
+|---|---|
+| [product-roadmap.md](./product-roadmap.md) | خارطة الطريق |
+| [MASTER_TODO.md](./MASTER_TODO.md) | المرجع الرسمي للمهام |
+| [project-management-additions.md](./project-management-additions.md) | إدارة المنتج |
 
-## طريقة تحديث التوثيق
+---
 
-- أي قرار استراتيجي جديد يجب إضافته إلى هذا المجلد.
-- أي تغيير في الرؤية أو نطاق MVP يجب توثيقه قبل تحويله إلى مهمة تطوير.
-- يجب الحفاظ على اللغة العربية كلغة أساسية لهذا التوثيق.
-- يجب ألا يتم خلط الأفكار المستقبلية مع متطلبات النسخة الأولى بدون تمييز واضح.
+## 3. Documentation Governance Layer
+
+| الملف | الغرض |
+|---|---|
+| [MASTER_DOCUMENTATION_STRUCTURE.md](./MASTER_DOCUMENTATION_STRUCTURE.md) | خريطة التوثيق |
+
+---
+
+# Canonical Source Rules
+
+| النوع | المصدر الرسمي |
+|---|---|
+| الرؤية | vision-and-identity.md |
+| المبادئ | core-product-principles.md |
+| القرارات المعمارية | architecture-decision-records.md |
+| حدود النظام | system-boundaries.md |
+| خارطة الطريق | product-roadmap.md |
+| المهام | MASTER_TODO.md |
+
+---
+
+# Core Rules
+
+بابلي يجب أن يبقى:
+
+- Clean Architecture
+- Multi-tenant
+- Scalable
+- RTL-ready
+- Multi-language
+- Web-first
+- Modular
+- Production-ready
+- Global-first
+
+---
+
+# Core Principle
+
+بابلي ليس مجموعة Features منفصلة.
+
+بابلي هو طبقة تحتية عالمية مترابطة للطعام.
