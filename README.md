@@ -1,160 +1,94 @@
 # Babili OS — بابلي
 
-> Babili is building the global food system.
+> النظام العالمي للطعام.
 
-بابلي هو نظام عالمي للطعام يربط بين:
+بابلي منصة عالمية تهدف إلى ربط الزبون، المطعم، المطبخ، الكاشير، الترجمة، الاكتشاف، الطلبات، التقييمات، والمحتوى ضمن تجربة موحدة وسهلة ومتعددة اللغات.
 
-- المستخدم
-- المطعم
-- المطبخ
-- الكاشير
-- الاكتشاف
-- الترجمة
-- الطلبات
-- المحتوى
-- التقييمات
-- المدن
-- السفر
-
-ضمن تجربة موحدة، سهلة، متعددة اللغات، وقابلة للتوسع عالميًا.
+هذا المستودع لا يوثق الكود فقط. في هذه المرحلة هو يوثق الفكرة، الرؤية، دراسة المنتج، نموذج العمل، وطريقة تحويل بابلي إلى نظام عالمي قابل للبناء.
 
 ---
 
-# Documentation Entry Point
-
-جميع وثائق المشروع الرسمية تبدأ من:
-
-- [`docs/MASTER_DOCUMENTATION_STRUCTURE.md`](./docs/MASTER_DOCUMENTATION_STRUCTURE.md)
-
-هذا الملف هو المرجع الرئيسي لفهم:
-
-- الرؤية
-- الفلسفة
-- البنية
-- خارطة الطريق
-- القواعد الأساسية
-- تنظيم التوثيق
-
----
-
-# Core Vision
+## ما هو بابلي؟
 
 بابلي ليس:
 
-- QR Menu فقط
-- POS فقط
-- تطبيق توصيل فقط
-- ERP فقط
+- QR Menu فقط.
+- نظام POS فقط.
+- تطبيق توصيل فقط.
+- نظام ERP فقط.
+- شبكة اجتماعية فقط.
 
-بل:
+بابلي هو محاولة لبناء:
 
-> النظام العالمي للطعام.
-
----
-
-# Core Principles
-
-بابلي يعتمد على:
-
-- Apple-level Experience
-- Ecosystem Thinking
-- Global-first Mindset
-- Software-first Expansion
-- Web-first Architecture
-- Multi-tenant Architecture
-- Microservices Architecture
-- Trust & Reputation Systems
-- Operational Calmness
-
-التفاصيل الكاملة:
-
-- [`docs/core-product-principles.md`](./docs/core-product-principles.md)
+> طبقة تحتية عالمية مترابطة للطعام.
 
 ---
 
-# Master Documentation Structure
+## المشاكل التي يحلها بابلي
 
-## 1. Core Vision Layer
-
-- [`vision-and-identity.md`](./docs/vision-and-identity.md)
-- [`core-product-principles.md`](./docs/core-product-principles.md)
-- [`system-boundaries.md`](./docs/system-boundaries.md)
-- [`architecture-decision-records.md`](./docs/architecture-decision-records.md)
-
-## 2. Product Strategy Layer
-
-- [`product-roadmap.md`](./docs/product-roadmap.md)
-- [`MASTER_TODO.md`](./docs/MASTER_TODO.md)
-
-## 3. Documentation Navigation
-
-- [`MASTER_DOCUMENTATION_STRUCTURE.md`](./docs/MASTER_DOCUMENTATION_STRUCTURE.md)
+| الفئة | المشاكل |
+|---|---|
+| الزبون | اللغة، السفر، اختيار المطعم، فهم الطعام، الحساسية، الدفع، الثقة |
+| المطعم | الفوضى، أخطاء الطلبات، الإدارة، التكاليف، ضعف الوجود الرقمي، خدمة السياح |
+| السوق | عدم وجود تجربة موحدة عالميًا للطعام والمطاعم |
 
 ---
 
-# Tech Stack
+## فلسفة بابلي
 
-- Frontend: Next.js + TypeScript
-- Backend: Node.js + Express
-- Database: PostgreSQL + Prisma
-- Cache: Redis
-- Architecture: Microservices + Multi-tenant
-- Deployment: Docker + Coolify
-
----
-
-# Development Philosophy
-
-بابلي يجب أن يبقى دائمًا:
-
-- Clean Architecture
-- Modular
-- Scalable
-- Multi-language
-- RTL-ready
-- Web-first
-- Production-ready
-- Global-first
+| المبدأ | المعنى |
+|---|---|
+| البساطة | النظام يجب أن يكون واضحًا وسهل الاستخدام |
+| السرعة | أقل خطوات ممكنة من البحث إلى الطلب والدفع |
+| الفخامة | تجربة راقية حتى للمطاعم الصغيرة |
+| تقليل الفوضى | تقليل الأخطاء والاحتكاك داخل المطعم |
+| التوسع العالمي | النظام يبنى منذ البداية ليصلح لعدة دول ولغات وثقافات |
 
 ---
 
-# Current Direction
+## Core Principles — المبادئ الأساسية
 
-التركيز الحالي:
-
-1. تثبيت الرؤية
-2. تنظيم التوثيق
-3. تحديد MVP الحقيقي
-4. بناء Product Architecture
-5. منع Feature Explosion
-6. الحفاظ على البساطة والجودة
-
----
-
-# Master TODO System
-
-جميع المهام تم توحيدها داخل:
-
-- [`docs/MASTER_TODO.md`](./docs/MASTER_TODO.md)
-
-ويعتبر المرجع الرسمي لـ:
-
-- Product Management
-- Infrastructure
-- Backend
-- Frontend
-- Security
-- AI
-- QA
-- Business
-- Global Expansion
+| المبدأ | الشرح |
+|---|---|
+| Ecosystem Thinking — التفكير بعقلية المنظومة | بابلي ليس تطبيقًا منفصلًا، بل منظومة طعام عالمية |
+| Apple-level Experience — تجربة بمستوى أبل | تجربة بسيطة، راقية، وسهلة أهم من كثرة الميزات |
+| Global-first — عالمي من البداية | كل قرار يجب أن يكون قابلًا للتوسع عالميًا |
+| Web-first — الويب أولًا | البداية من المتصفح وQR بدون إجبار المستخدم على تحميل تطبيق |
+| Software-first — البرمجيات أولًا | لا نعتمد على أجهزة خاصة في البداية |
+| Frictionless First — تقليل الاحتكاك | أقل خطوات ممكنة للزبون والمطعم |
+| Platform Brand — علامة منصة موحدة | بابلي منصة عالمية موحدة وليس White-label |
+| Trust Layer — طبقة الثقة | حسابات حقيقية، توثيق، وتقييمات موثوقة |
+| Operational Calmness — الهدوء التشغيلي | تقليل فوضى المطعم والأخطاء وسوء الفهم |
+| Network Effects — تأثير الشبكة | كل مطعم ومستخدم وتقييم يزيد قيمة النظام |
+| Start Small, Think Global — ابدأ صغيرًا وفكر عالميًا | الرؤية ضخمة، لكن التنفيذ يبدأ من نقطة دقيقة |
 
 ---
 
-# Core Rule
+## الملفات الرسمية
+
+| الملف | الغرض |
+|---|---|
+| [الوثيقة الرئيسية المعتمدة](./docs/BABILI_MASTER_DOCUMENT.md) | الدراسة الكاملة للرؤية، الفكرة، المنتج، البزنس، المخاطر، وخارطة الطريق |
+| [ملف المهام الرئيسي](./docs/MASTER_TODO.md) | المهام المكتملة، غير المكتملة، وما يحتاج نقاشًا أو قرارًا |
+
+---
+
+## المرحلة الحالية
+
+نحن الآن في مرحلة:
+
+> تحويل فكرة بابلي إلى دراسة منتج مفصلة قبل الدخول في التنفيذ التقني العميق.
+
+الخطوة التالية:
+
+> تحديد MVP الرسمي لبابلي وإغلاق نطاق النسخة الأولى.
+
+---
+
+## القاعدة الأهم
 
 بابلي ليس مجموعة Features منفصلة.
 
-بابلي:
+بابلي هو:
 
-> طبقة تحتية عالمية للطعام.
+> نظام عالمي مترابط للطعام.
